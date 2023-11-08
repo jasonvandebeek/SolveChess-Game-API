@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    environment {
+        dockerRegistry = "jasonvandebeek/SolveChess-API"
+        dockerRegistryCredential = 'dockerhub_id'     
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build and Test') {
+            steps {
+                script {
+                    def mavenHome = tool name: 'Maven', type: 'maven'
+                    def dockerImage
+
+                    sh "${mavenHome}/bin/dotnet build"
+                    sh "${mavenHome}/bin/dotnet test"
+
+                    def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
+
+                    if (testsPassed) {
+                        dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
+                    } else {
+                        error("Tests failed. Skipping Docker image build and publish.")
+                    }
+                }
+            }
+        }
+        stage('Publish to Docker Hub') {
+            when {
+                expression { dockerImage != null }
+            }
+            steps {
+                script {
+                    docker.withRegistry('', dockerRegistryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Cleaning up') {
+            steps {
+                sh "docker rmi ${dockerRegistry}:${BUILD_NUMBER}"
+            }
+        }
+    }
+}
