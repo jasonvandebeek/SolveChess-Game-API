@@ -5,19 +5,13 @@ pipeline {
         dockerRegistryCredential = 'dockerhub_id'     
     }
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
         stage('Build and Test') {
             steps {
                 script {
-                    def mavenHome = tool name: 'Maven', type: 'maven'
                     def dockerImage
 
-                    sh "${mavenHome}/bin/dotnet build"
-                    sh "${mavenHome}/bin/dotnet test"
+                    sh "dotnet build"
+                    sh "dotnet test"
 
                     def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
 
