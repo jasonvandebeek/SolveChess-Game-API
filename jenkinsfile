@@ -8,25 +8,23 @@ pipeline {
         stage('Build and Test') {
             steps {
                 script {
-                    def dockerImage
-
                     sh "dotnet build"
                     sh "dotnet test"
-
-                    def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
-
-                    if (testsPassed) {
-                        dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
-                    } else {
-                        error("Tests failed. Skipping Docker image build and publish.")
-                    }
                 }
             }
         }
+		stage('Build Docker Image') {
+			steps {
+				def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
+
+				if (testsPassed) {
+					dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
+				} else {
+					error("Tests failed. Skipping Docker image build and publish.")
+				}
+			}
+		}
         stage('Publish to Docker Hub') {
-            when {
-                expression { dockerImage != null }
-            }
             steps {
                 script {
                     docker.withRegistry('', dockerRegistryCredential) {
