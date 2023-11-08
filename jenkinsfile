@@ -15,12 +15,14 @@ pipeline {
         }
 		stage('Build Docker Image') {
 			steps {
-				def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
+				script {
+					def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
 
-				if (testsPassed) {
-					dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
-				} else {
-					error("Tests failed. Skipping Docker image build and publish.")
+					if (testsPassed) {
+						dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
+					} else {
+						error("Tests failed. Skipping Docker image build and publish.")
+					}
 				}
 			}
 		}
