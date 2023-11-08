@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        dockerRegistry = "jasonvandebeek/SolveChess-API"
+        dockerRegistry = "jasonvandebeek/solvechess-api"
         dockerRegistryCredential = 'dockerhub_id'     
     }
     stages {
