@@ -5,14 +5,20 @@ pipeline {
         dockerRegistryCredential = 'dockerhub_id'     
     }
     stages {
-        stage('Build and Test') {
+        stage('Build .NET Application') {
             steps {
                 script {
                     sh "dotnet build"
-                    sh "dotnet test"
                 }
             }
         }
+		stage('Run .NET Tests') {
+			steps {
+				script {
+					sh "dotnet test"
+				}
+			}
+		}
 		stage('Build Docker Image') {
 			steps {
 				script {
