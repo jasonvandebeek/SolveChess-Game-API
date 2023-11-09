@@ -19,7 +19,7 @@ pipeline {
 					def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
 
 					if (testsPassed) {
-						docker.build "${dockerRegistry}:latest"
+						docker.build "${dockerRegistry}:${BUILD_NUMBER}"
 					} else {
 						error("Tests failed. Skipping Docker image build and publish.")
 					}
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Cleaning up') {
             steps {
-                sh "docker rmi ${dockerRegistry}:latest"
+                sh "docker rmi ${dockerRegistry}:${BUILD_NUMBER}"
             }
         }
     }
