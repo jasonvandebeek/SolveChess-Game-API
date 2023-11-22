@@ -10,7 +10,14 @@ namespace SolveChess.Logic.Chess;
 public class Board
 {
 
-    private PieceBase?[,] board = new PieceBase?[8, 8];
+    private readonly PieceBase?[,] board = new PieceBase?[8, 8];
+
+    public bool CastlingRightBlackKingSide { get; set; }
+    public bool CastlingRightBlackQueenSide { get; set; }
+    public bool CastlingRightWhiteKingSide { get; set; }
+    public bool CastlingRightWhiteQueenSide { get; set; }
+
+    public Square? EnpassantSquare { get; set; }
 
     public string Fen {
         get
@@ -45,7 +52,7 @@ public class Board
         }
     }
 
-    public Board(string fen)
+    public Board(string fen, bool castlingRightBlackKingSide = false, bool castlingRightBlackQueenSide = false, bool castlingRightWhiteKingSide = false, bool castlingRightWhiteQueenSide = false, Square? enpassantSquare = null)
     {
         if (!IsValidFEN(fen))
             throw new InvalidOperationException("Invalid FEN!");
@@ -70,6 +77,13 @@ public class Board
                 }
             }
         }
+
+        CastlingRightBlackKingSide = castlingRightBlackKingSide;
+        CastlingRightBlackQueenSide = castlingRightBlackQueenSide;
+        CastlingRightWhiteKingSide = castlingRightWhiteKingSide;
+        CastlingRightWhiteQueenSide = castlingRightWhiteQueenSide;
+
+        EnpassantSquare = enpassantSquare;
     }
 
     public Board(Board board)
@@ -84,6 +98,13 @@ public class Board
                 this.board[i, j] = originalBoard[i, j];
             }
         }
+
+        CastlingRightBlackKingSide = board.CastlingRightBlackKingSide;
+        CastlingRightBlackQueenSide = board.CastlingRightBlackQueenSide;
+        CastlingRightWhiteKingSide = board.CastlingRightWhiteKingSide;
+        CastlingRightWhiteQueenSide = board.CastlingRightWhiteQueenSide;
+
+        EnpassantSquare = board.EnpassantSquare;
     }
 
     public Square GetSquareOfPiece(PieceBase piece)
@@ -130,6 +151,9 @@ public class Board
     public bool KingInCheck(Side side)
     {
         var king = GetKing(side);
+        if (king == null)
+            return false;
+
         return king.IsChecked(this);
     }
 
@@ -167,7 +191,7 @@ public class Board
         return true;
     }
 
-    public King GetKing(Side side)
+    public King? GetKing(Side side)
     {
         for(int rank = 0; rank < board.GetLength(0); rank++)
         {
@@ -178,11 +202,11 @@ public class Board
                 if (piece == null || piece.Type != PieceType.KING || piece.Side != side)
                     continue;
 
-                return piece as King;
+                return (King) piece;
             }
         }
 
-        throw new Exception("King not found!");
+        return null;
     }
 
     public void PromotePiece(Square from, Square to, PieceBase promotionPiece)
@@ -198,5 +222,6 @@ public class Board
 
         return fenRegex.IsMatch(fen);
     }
+
 }
 

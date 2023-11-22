@@ -11,12 +11,7 @@ public class Game
     [Key]
     public string Id { get; set; }
 
-    [ForeignKey("WhitePlayerId")]
-    public User WhitePlayer { get; set; }
     public string WhitePlayerId { get; set; }
-
-    [ForeignKey("BlackPlayerId")]
-    public User BlackPlayer { get; set; }
     public string BlackPlayerId { get; set; }
 
     public GameState State { get; set; }

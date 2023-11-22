@@ -1,7 +1,6 @@
 ﻿
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
-using System.Linq;
 
 namespace SolveChess.Logic.Chess.Pieces;
 
@@ -9,7 +8,7 @@ public abstract class PieceBase
 {
 
     private readonly Side _side;
-    public Side Side { get; }
+    public Side Side { get { return _side; } }
 
     public abstract PieceType Type { get; }
 
@@ -42,7 +41,6 @@ public abstract class PieceBase
         return false;
     }
 
-    //TODO: add enpassant
     protected IEnumerable<Square> PawnMoves(Board board)
     {
         PieceBase?[,] boardArray = board.GetBoardArray();
@@ -69,7 +67,7 @@ public abstract class PieceBase
             targetSquare = new Square(startingPosition.Rank + forwardDirection, startingPosition.File - 1);
             PieceBase? target = boardArray[targetSquare.Rank, targetSquare.File];
 
-            if (target != null && target.Side != _side)
+            if (target != null && target.Side != _side || targetSquare.Equals(board.EnpassantSquare))
                 moves.Add(targetSquare);
         }
 
@@ -78,7 +76,7 @@ public abstract class PieceBase
             targetSquare = new Square(startingPosition.Rank + forwardDirection, startingPosition.File + 1);
             PieceBase? target = boardArray[targetSquare.Rank, targetSquare.File];
 
-            if (target != null && target.Side != this.Side)
+            if (target != null && target.Side != _side || targetSquare.Equals(board.EnpassantSquare))
                 moves.Add(targetSquare);
         }
 
@@ -99,16 +97,15 @@ public abstract class PieceBase
             int rank = startingPosition.Rank + rankOffset;
             int file = startingPosition.File + fileOffset;
 
-            while (rank >= 0 && rank < 8 && file >= 0 && file < 8)
+            while (IsWithinBoardBounds(rank, file))
             {
                 PieceBase? target = boardArray[rank, file];
 
                 if (target != null)
                 {
-                    if (target.Side == _side)
-                        break;
+                    if (target.Side != _side)
+                        moves.Add(new Square(rank, file));
 
-                    moves.Add(new Square(rank, file));
                     break;
                 }
 
@@ -136,15 +133,15 @@ public abstract class PieceBase
             int rank = startingPosition.Rank + rankOffset;
             int file = startingPosition.File + fileOffset;
 
-            if (rank >= 0 && rank < 8 && file >= 0 && file < 8)
-            {
-                PieceBase? target = boardArray[rank, file];
+            if (!IsWithinBoardBounds(rank, file))
+                continue;
 
-                if (target != null && target.Side == _side)
-                    continue;
+            PieceBase? target = boardArray[rank, file];
 
-                moves.Add(new Square(rank, file));
-            }
+            if (target != null && target.Side == _side)
+                continue;
+
+            moves.Add(new Square(rank, file));
         }
 
         return moves;
@@ -164,7 +161,7 @@ public abstract class PieceBase
             int rank = startingPosition.Rank + rankOffset;
             int file = startingPosition.File + fileOffset;
 
-            while (rank >= 0 && rank < 8 && file >= 0 && file < 8)
+            while (IsWithinBoardBounds(rank, file))
             {
                 PieceBase? target = boardArray[rank, file];
 
@@ -193,12 +190,28 @@ public abstract class PieceBase
         return RookMoves(board).Concat(BishopMoves(board));
     }
 
-    //Add castling
     protected IEnumerable<Square> KingMoves(Board board)
     {
         PieceBase?[,] boardArray = board.GetBoardArray();
         Square startingPosition = board.GetSquareOfPiece(this);
         var moves = new List<Square>();
+
+        if (Side == Side.WHITE)
+        {
+            if (board.CastlingRightWhiteKingSide)
+                moves.Add(new Square(7, 6));
+
+            if (board.CastlingRightWhiteQueenSide)
+                moves.Add(new Square(7, 1));
+        }
+        else
+        {
+            if (board.CastlingRightBlackKingSide)
+                moves.Add(new Square(0, 6));
+
+            if(board.CastlingRightBlackQueenSide)
+                moves.Add(new Square(0, 1));
+        }
 
         for (int i = 0; i < 8; i++)
         {
@@ -208,15 +221,15 @@ public abstract class PieceBase
             int rank = startingPosition.Rank + rankOffset;
             int file = startingPosition.File + fileOffset;
 
-            if (rank >= 0 && rank < 8 && file >= 0 && file < 8)
-            {
-                PieceBase? target = boardArray[rank, file];
+            if (!IsWithinBoardBounds(rank, file))
+                continue;
 
-                if (target != null && target.Side == _side)
-                    continue;
+            PieceBase? target = boardArray[rank, file];
 
-                moves.Add(new Square(rank, file));
-            }
+            if (target != null && target.Side == _side)
+                continue;
+
+            moves.Add(new Square(rank, file));
         }
 
         return moves;
@@ -237,6 +250,11 @@ public abstract class PieceBase
         }
 
         return legalMoves;
+    }
+
+    private static bool IsWithinBoardBounds(int rank, int file)
+    {
+        return rank >= 0 && rank < 8 && file >= 0 && file < 8;
     }
 
 }

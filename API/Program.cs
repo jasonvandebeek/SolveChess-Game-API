@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using SolveChess.DAL;
+using SolveChess.API.Exceptions;
 using SolveChess.DAL.Model;
-using SolveChess.Logic.DAL;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +9,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IUserDataDAL, UserDataDAL>();
-
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseMySQL(builder.Configuration.GetConnectionString("MySQLDataBase") ?? throw new Exception("No connection string found in config!"));
+    var mysqlConnectionString = Environment.GetEnvironmentVariable("SolveChess_MySQLConnectionString") ?? throw new MissingEnvVariableException("No connection string found in .env variables!");
+
+    options.UseMySQL(mysqlConnectionString);
 });
 
 var app = builder.Build();
