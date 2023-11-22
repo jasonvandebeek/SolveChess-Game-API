@@ -21,7 +21,7 @@ public abstract class PieceBase
         }
     }
 
-    public PieceBase(Side side)
+    protected PieceBase(Side side)
     {
         _side = side;
     }
@@ -30,15 +30,7 @@ public abstract class PieceBase
 
     public bool CanMoveToSquare(Square target, Board board)
     {
-        IEnumerable<Square> moves = GetPossibleMoves(board);
-
-        foreach(Square move in moves)
-        {
-            if (target.Equals(move))
-                return true;
-        }
-
-        return false;
+        return GetPossibleMoves(board).Any(move => target.Equals(move));
     }
 
     protected IEnumerable<Square> PawnMoves(Board board)

@@ -4,13 +4,14 @@ using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DTO;
+using SolveChess.Logic.Exceptions;
 
 namespace SolveChess.Logic.Chess;
 
 public class Game
 {
 
-    public GameState State { get; private set; } = GameState.IN_PROGRESS;
+    public GameState State { get; private set; }
 
     private readonly Board board;
     public string Fen { get { return board.Fen; } }
@@ -18,7 +19,7 @@ public class Game
     public int FullMoveNumber { get; private set; } = 0;
     public int HalfMoveClock { get; private set; } = 0;
 
-    public Side SideToMove { get; private set; } = Side.WHITE;
+    public Side SideToMove { get; private set; }
 
     public bool CastlingRightBlackKingSide { get { return board.CastlingRightBlackKingSide; } }
     public bool CastlingRightBlackQueenSide { get { return board.CastlingRightBlackQueenSide; } }
@@ -27,7 +28,7 @@ public class Game
 
     public Square? EnpassantSquare { get { return board.EnpassantSquare; } }
 
-    public Game(GameDTO gameDTO)
+    public Game(GameDto gameDTO)
     {
         State = gameDTO.State;
         board = new Board(gameDTO.Fen, gameDTO.CastlingRightBlackKingSide, gameDTO.CastlingRightBlackQueenSide, gameDTO.CastlingRightWhiteKingSide, gameDTO.CastlingRightWhiteQueenSide, gameDTO.EnpassantSquare);
@@ -36,14 +37,11 @@ public class Game
         SideToMove = gameDTO.SideToMove;
     }
 
-    public MoveDTO PlayMove(Square from, Square to, PieceType? promotion)
+    public MoveDto? PlayMove(Square from, Square to, PieceType? promotion)
     {
         PieceBase? piece = board.GetPieceAt(from);
-        if (piece == null || piece.Side != SideToMove)
-            throw new Exception("Invalid Piece!");
-
-        if (board.CanPieceMoveTo(piece, to))
-            throw new Exception("Invalid Move!");
+        if (piece == null || piece.Side != SideToMove || board.CanPieceMoveTo(piece, to))
+            return null;
 
         UpdateEnpassantSquare(piece, to);
         UpdateCastlingRights(piece, from);
@@ -63,7 +61,7 @@ public class Game
 
         string moveNotation = BuildMoveNotation(piece, targetPiece, from, to, promotion);
 
-        return new MoveDTO()
+        return new MoveDto()
         {
             Number = fullMoveNumber,
             Side = piece.Side,
@@ -109,14 +107,14 @@ public class Game
             if (promotion != null)
             {
                 if (promotion == PieceType.PAWN || promotion == PieceType.KING)
-                    throw new Exception("Invalid promotion type exception");
+                    throw new PromotionException("Invalid promotion piece!");
 
-                var promotionPiece = new PieceFactory().BuildPiece(promotion, piece.Side);
+                var promotionPiece = PieceFactory.BuildPiece(promotion, piece.Side);
 
                 board.PromotePiece(from, to, promotionPiece);
             }
             else
-                throw new Exception("Promotion expected exception!");
+                throw new PromotionException("Promotion expected!");
         }
         else
             board.MovePiece(from, to);
@@ -150,7 +148,7 @@ public class Game
 
         if (promotion != null)
         {
-            var tempPiece = new PieceFactory().BuildPiece(promotion, piece.Side);
+            var tempPiece = PieceFactory.BuildPiece(promotion, piece.Side);
 
             notation += $"={tempPiece.Notation}";
         }

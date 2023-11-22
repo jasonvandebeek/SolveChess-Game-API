@@ -1,13 +1,14 @@
 ﻿
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Pieces;
+using SolveChess.Logic.Exceptions;
 
 namespace SolveChess.Logic.Chess.Factories;
 
 public class PieceFactory
 {
 
-    public PieceBase BuildPiece(char type, Side side)
+    public static PieceBase BuildPiece(char type, Side side)
     {
         char lowerChar = char.ToLower(type);
 
@@ -19,11 +20,11 @@ public class PieceFactory
             'b' => new Bishop(side),
             'q' => new Queen(side),
             'k' => new King(side),
-            _ => throw new Exception("Invalid piece type!")
+            _ => throw new BuilderPieceTypeException("Invalid piece type!")
         };
     }
 
-    public PieceBase BuildPiece(PieceType? type, Side side)
+    public static PieceBase BuildPiece(PieceType? type, Side side)
     {
         return type switch
         {
@@ -33,7 +34,7 @@ public class PieceFactory
             PieceType.BISHOP => new Bishop(side),
             PieceType.QUEEN => new Queen(side),
             PieceType.KING => new King(side),
-            _ => throw new Exception("Invalid piece type!")
+            _ => throw new BuilderPieceTypeException("Invalid piece type!")
         };
     }
 

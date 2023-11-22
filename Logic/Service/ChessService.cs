@@ -11,11 +11,11 @@ namespace SolveChess.Logic.Service;
 public class ChessService
 {
 
-    private readonly IGameDAL _gameDAL;
+    private readonly IGameDal _gameDal;
 
-    public ChessService(IGameDAL gameDAL)
+    public ChessService(IGameDal gameDal)
     {
-        _gameDAL = gameDAL;
+        _gameDal = gameDal;
     }
 
     public bool UserHasAccessToGame(string gameId, string userId)
@@ -25,18 +25,20 @@ public class ChessService
 
     public void PlayMoveOnGame(string gameId, string userId, Square from, Square to, PieceType? promotion)
     {
-        var gameDTO = _gameDAL.GetGame(gameId);
-        if ((gameDTO.SideToMove != Side.BLACK && gameDTO.BlackPlayerId == userId) || (gameDTO.SideToMove != Side.WHITE && gameDTO.WhitePlayerId == userId))
+        var gameDto = _gameDal.GetGame(gameId);
+        if ((gameDto.SideToMove != Side.BLACK && gameDto.BlackPlayerId == userId) || (gameDto.SideToMove != Side.WHITE && gameDto.WhitePlayerId == userId))
             return;
 
-        var game = new Game(gameDTO);
-        MoveDTO moveDTO = game.PlayMove(from, to, promotion);
+        var game = new Game(gameDto);
+        MoveDto? moveDto = game.PlayMove(from, to, promotion);
+        if (moveDto == null)
+            return;
 
-        var updatedGameDTO = new GameDTO()
+        var updatedGameDto = new GameDto()
         {
-            Id = gameDTO.Id,
-            WhitePlayerId = gameDTO.WhitePlayerId,
-            BlackPlayerId = gameDTO.BlackPlayerId,
+            Id = gameDto.Id,
+            WhitePlayerId = gameDto.WhitePlayerId,
+            BlackPlayerId = gameDto.BlackPlayerId,
             State = game.State,
             Fen = game.Fen,
             SideToMove = game.SideToMove,
@@ -49,11 +51,11 @@ public class ChessService
             EnpassantSquare = game.EnpassantSquare,
         };
 
-        _gameDAL.UpdateGame(updatedGameDTO);
-        _gameDAL.AddMove(gameId, moveDTO);
+        _gameDal.UpdateGame(updatedGameDto);
+        _gameDal.AddMove(gameId, moveDto);
     }
 
-    public IEnumerable<MoveDTO> GetMoves(string gameId)
+    public IEnumerable<MoveDto> GetMoves(string gameId)
     {
         throw new NotImplementedException();
     }

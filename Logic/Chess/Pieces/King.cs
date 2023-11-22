@@ -45,7 +45,7 @@ public class King : PieceBase
         return false;
     }
     
-    private bool AttackingPieceOfType(Board board, IEnumerable<Square> moves, PieceType type)
+    private static bool AttackingPieceOfType(Board board, IEnumerable<Square> moves, PieceType type)
     {
         bool found = false;
 

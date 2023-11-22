@@ -4,17 +4,17 @@ using SolveChess.Logic.Chess.Utilities;
 
 namespace SolveChess.Logic.DTO;
 
-public class GameDTO
+public class GameDto
 {
 
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
-    public string WhitePlayerId { get; set; }
-    public string BlackPlayerId { get; set; }
+    public string WhitePlayerId { get; set; } = null!;
+    public string BlackPlayerId { get; set; } = null!;
 
     public GameState State { get; set; }
 
-    public string Fen { get; set; }
+    public string Fen { get; set; } = null!;
 
     public int FullMoveNumber { get; set; }
     public int HalfMoveClock { get; set; }

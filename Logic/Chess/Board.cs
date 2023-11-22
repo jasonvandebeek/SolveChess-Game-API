@@ -3,6 +3,7 @@ using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SolveChess.Logic.Chess;
@@ -22,9 +23,9 @@ public class Board
     public string Fen {
         get
         {
-            string fen = "";
-    
-            for(int rank = 0; rank < board.GetLength(0); rank++)
+            var fen = new StringBuilder();
+
+            for (int rank = 0; rank < board.GetLength(0); rank++)
             {
                 int empty = 0;
                 for(int file = 0; file < board.GetLength(1); file++)
@@ -37,18 +38,19 @@ public class Board
                     }
 
                     if (empty > 0)
-                        fen += (empty.ToString());
+                        fen.Append(empty);
 
-                    fen += (piece.Notation);
+                    fen.Append(piece.Notation);
                 }
 
                 if (empty > 0)
-                    fen += (empty.ToString());
+                    fen.Append(empty);
 
-                fen += "/";
+                fen.Append('/');
             }
 
-            return fen.Remove(fen.Length - 1);
+            fen.Remove(fen.Length - 1, 1);
+            return fen.ToString();
         }
     }
 
@@ -72,7 +74,7 @@ public class Board
                 {
                     Side side = char.IsUpper(fenChar) ? Side.WHITE : Side.BLACK;
 
-                    board[rank, file] = new PieceFactory().BuildPiece(fenChar, side);
+                    board[rank, file] = PieceFactory.BuildPiece(fenChar, side);
                     file++;
                 }
             }

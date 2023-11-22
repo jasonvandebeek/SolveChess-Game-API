@@ -1,4 +1,6 @@
 ﻿
+using SolveChess.Logic.Exceptions;
+
 namespace SolveChess.Logic.Chess.Utilities;
 
 public class Square
@@ -15,7 +17,7 @@ public class Square
     public Square(int rank, int file)
     {
         if (rank < 0 || rank > 7 || file < 0 || file > 7)
-            throw new Exception("Arguments out of bounds exception!");
+            throw new ArgumentsOutOfBoundsException();
 
         _rank = rank;
         _file = file;

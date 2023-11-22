@@ -9,14 +9,17 @@ public class Game
 {
 
     [Key]
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
-    public string WhitePlayerId { get; set; }
-    public string BlackPlayerId { get; set; }
+    [Required]
+    public string WhitePlayerId { get; set; } = null!;
+    [Required]
+    public string BlackPlayerId { get; set; } = null!;
 
     public GameState State { get; set; }
 
-    public string Fen { get; set; }
+    [Required]
+    public string Fen { get; set; } = null!;
 
     public int FullMoveNumber { get; set; }
     public int HalfMoveClock { get; set; }

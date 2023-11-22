@@ -6,29 +6,29 @@ using SolveChess.Logic.DTO;
 
 namespace SolveChess.DAL;
 
-public class GameDAL : AppDbContext, IGameDAL
+public class GameDal : AppDbContext, IGameDal
 {
 
-    public GameDAL(DbContextOptions<AppDbContext> options) : base(options)
-    {
+    public GameDal(DbContextOptions<AppDbContext> options) : base(options)
+    { 
     }
 
-    public void AddMove(string gameId, MoveDTO move)
-    {
-        throw new NotImplementedException();
-    }
-
-    public GameDTO GetGame(string gameId)
+    public void AddMove(string gameId, MoveDto move)
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<MoveDTO> GetMoves(string gameId)
+    public GameDto GetGame(string gameId)
     {
         throw new NotImplementedException();
     }
 
-    public void UpdateGame(GameDTO game)
+    public IEnumerable<MoveDto> GetMoves(string gameId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateGame(GameDto game)
     {
         throw new NotImplementedException();
     }
