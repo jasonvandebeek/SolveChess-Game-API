@@ -219,10 +219,19 @@ public class Board
 
     static private bool IsValidFEN(string fen)
     {
-        string fenPattern = @"^\s*(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)(\s([b|w]))?(\s([K|Q|k|q]{1,4}))?(\s(-|[a-h][1-8]))?(\s(\d+\s\d+))?$";
-        var fenRegex = new Regex(fenPattern);
+        string pattern = @"^\s*(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)(\s([b|w]))?(\s([K|Q|k|q]{1,4}))?(\s(-|[a-h][1-8]))?(\s(\d+\s\d+))?$";
 
-        return fenRegex.IsMatch(fen);
+        try
+        {
+            var regex = new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
+            Match match = regex.Match(fen);
+
+            return match.Success;
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            return false;
+        }
     }
 
 }

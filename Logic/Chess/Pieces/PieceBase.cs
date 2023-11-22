@@ -1,6 +1,7 @@
 ﻿
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
+using System.Linq;
 
 namespace SolveChess.Logic.Chess.Pieces;
 
@@ -179,23 +180,6 @@ public abstract class PieceBase
         Square startingPosition = board.GetSquareOfPiece(this);
         var moves = new List<Square>();
 
-        if (Side == Side.WHITE)
-        {
-            if (board.CastlingRightWhiteKingSide)
-                moves.Add(new Square(7, 6));
-
-            if (board.CastlingRightWhiteQueenSide)
-                moves.Add(new Square(7, 1));
-        }
-        else
-        {
-            if (board.CastlingRightBlackKingSide)
-                moves.Add(new Square(0, 6));
-
-            if(board.CastlingRightBlackQueenSide)
-                moves.Add(new Square(0, 1));
-        }
-
         for (int i = 0; i < 8; i++)
         {
             int rankOffset = new int[] { 1, 1, 1, 0, 0, -1, -1, -1 }[i];
@@ -215,7 +199,27 @@ public abstract class PieceBase
             moves.Add(new Square(rank, file));
         }
 
-        return moves;
+        return moves.Concat(KingCastlingMoves(board));
+    }
+
+    private IEnumerable<Square> KingCastlingMoves(Board board)
+    {
+        if (Side == Side.WHITE)
+        {
+            if (board.CastlingRightWhiteKingSide)
+                yield return new Square(7, 6);
+
+            if (board.CastlingRightWhiteQueenSide)
+                yield return new Square(7, 1);
+        }
+        else
+        {
+            if (board.CastlingRightBlackKingSide)
+                yield return new Square(0, 6);
+
+            if (board.CastlingRightBlackQueenSide)
+                yield return new Square(0, 1);
+        }
     }
 
     protected IEnumerable<Square> FilterOutIllegalMoves(IEnumerable<Square> moves, Board board)
