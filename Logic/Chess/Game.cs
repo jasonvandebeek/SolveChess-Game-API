@@ -45,7 +45,7 @@ public class Game
             return null;
 
         UpdateEnpassantSquare(piece, to);
-        UpdateCastlingRights(piece, from);
+        UpdateCastlingRights(piece, SideToMove, from);
 
         PieceBase? targetPiece = board.GetPieceAt(to);
         UpdateHalfMoveClock(piece, targetPiece);
@@ -60,7 +60,19 @@ public class Game
         SwitchSideToMove();
         UpdateGameState();
 
-        string moveNotation = new NotationBuilder(piece, targetPiece, from, to, promotion, board.KingInCheck(SideToMove), board.KingIsMated(SideToMove), EnpassantSquare).Notation;
+        var moveInfo = new MoveInfo()
+        {
+            Piece = piece,
+            TargetPiece = targetPiece,
+            From = from,
+            To = to,
+            Promotion = promotion,
+            IsCheck = board.KingInCheck(SideToMove), 
+            IsMate = board.KingIsMated(SideToMove),
+            EnpassantSquare = EnpassantSquare
+        };
+
+        string moveNotation = new NotationBuilder(moveInfo).Notation;
 
         return new MoveDto()
         {
@@ -132,43 +144,43 @@ public class Game
         }
     }
 
-    private void UpdateCastlingRights(PieceBase piece, Square from)
+    private void UpdateCastlingRights(PieceBase piece, Side side, Square from)
     {
-        bool isWhite = SideToMove == Side.WHITE;
-        bool canCastleQueenSide = isWhite ? board.CastlingRightWhiteQueenSide : board.CastlingRightBlackQueenSide;
-        bool canCastleKingSide = isWhite ? board.CastlingRightWhiteKingSide : board.CastlingRightBlackKingSide;
+        if (piece.Type == PieceType.KING)
+            UpdateCastlingRightsKingMove(side);
+        else if (piece.Type == PieceType.ROOK)
+            UpdateCastlingRightsRookMove(side, from);
+    }
 
-        if ((isWhite && (canCastleQueenSide || canCastleKingSide)) || (!isWhite && (canCastleQueenSide || canCastleKingSide)))
+    private void UpdateCastlingRightsKingMove(Side side)
+    {
+        if (side == Side.BLACK)
         {
-            if (piece.Type == PieceType.KING)
-            {
-                if (isWhite)
-                {
-                    board.CastlingRightWhiteQueenSide = false;
-                    board.CastlingRightWhiteKingSide = false;
-                }
-                else
-                {
-                    board.CastlingRightBlackQueenSide = false;
-                    board.CastlingRightBlackKingSide = false;
-                }
-            }
-            else if (piece.Type == PieceType.ROOK)
-            {
-                bool isQueenSide = from.Rank == (isWhite ? 7 : 0) && from.File == 0;
-                bool isKingSide = from.Rank == (isWhite ? 7 : 0) && from.File == 7;
+            board.CastlingRightBlackQueenSide = false;
+            board.CastlingRightBlackKingSide = false;
+        }
+        else
+        {
+            board.CastlingRightWhiteQueenSide = false;
+            board.CastlingRightWhiteKingSide = false;
+        }
+    }
 
-                if (isWhite)
-                {
-                    board.CastlingRightWhiteQueenSide = !isQueenSide;
-                    board.CastlingRightWhiteKingSide = !isKingSide;
-                }
-                else
-                {
-                    board.CastlingRightBlackQueenSide = !isQueenSide;
-                    board.CastlingRightBlackKingSide = !isKingSide;
-                }
-            }
+    private void UpdateCastlingRightsRookMove(Side side, Square from)
+    {
+        if(side == Side.BLACK)
+        {
+            if (from.Equals(new Square(7, 0)))
+                board.CastlingRightWhiteQueenSide = false;
+            else if (from.Equals(new Square(7, 7)))
+                board.CastlingRightWhiteKingSide = false;
+        }
+        else
+        {
+            if (from.Equals(new Square(0, 0)))
+                board.CastlingRightWhiteQueenSide = false;
+            else if (from.Equals(new Square(0, 7)))
+                board.CastlingRightWhiteKingSide = false;
         }
     }
 

@@ -35,40 +35,31 @@ public abstract class PieceBase
 
     protected IEnumerable<Square> PawnMoves(Board board)
     {
-        PieceBase?[,] boardArray = board.GetBoardArray();
         Square startingPosition = board.GetSquareOfPiece(this);
         int forwardDirection = _side == Side.WHITE ? -1 : 1;
         var moves = new List<Square>();
 
-        var targetSquare = new Square(startingPosition.Rank + forwardDirection, startingPosition.File);
-        if (boardArray[targetSquare.Rank, targetSquare.File] == null)
+        void AddMove(int rankOffset, int fileOffset)
         {
-            moves.Add(targetSquare);
-
-            if(_side == Side.WHITE && startingPosition.Rank == 6 || _side == Side.BLACK && startingPosition.Rank == 1) 
-            {
-                targetSquare = new Square(startingPosition.Rank + forwardDirection * 2, startingPosition.File);
-
-                if (boardArray[targetSquare.Rank, targetSquare.File] == null)
-                    moves.Add(targetSquare);
-            }
-        }
-
-        if(startingPosition.File - 1 > 0)
-        {
-            targetSquare = new Square(startingPosition.Rank + forwardDirection, startingPosition.File - 1);
-            PieceBase? target = boardArray[targetSquare.Rank, targetSquare.File];
-
-            if (target != null && target.Side != _side || targetSquare.Equals(board.EnpassantSquare))
+            var targetSquare = new Square(startingPosition.Rank + rankOffset, startingPosition.File + fileOffset);
+            if (board.GetPieceAt(targetSquare) == null)
                 moves.Add(targetSquare);
         }
 
-        if (startingPosition.File + 1 < 8)
-        {
-            targetSquare = new Square(startingPosition.Rank + forwardDirection, startingPosition.File + 1);
-            PieceBase? target = boardArray[targetSquare.Rank, targetSquare.File];
+        AddMove(forwardDirection, 0);
 
-            if (target != null && target.Side != _side || targetSquare.Equals(board.EnpassantSquare))
+        if (_side == Side.WHITE && startingPosition.Rank == 6 || _side == Side.BLACK && startingPosition.Rank == 1)
+            AddMove(forwardDirection * 2, 0);
+
+        foreach (int fileOffset in new[] { -1, 1 })
+        {
+            int newFile = startingPosition.File + fileOffset;
+            if (newFile > 7 || newFile < 0)
+                continue;
+
+            var targetSquare = new Square(startingPosition.Rank + forwardDirection, newFile);
+            PieceBase? target = board.GetPieceAt(targetSquare);
+            if ((target != null && target.Side != _side) || targetSquare.Equals(board.EnpassantSquare))
                 moves.Add(targetSquare);
         }
 

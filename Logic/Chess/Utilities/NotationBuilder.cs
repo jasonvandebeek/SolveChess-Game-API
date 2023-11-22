@@ -14,17 +14,17 @@ public class NotationBuilder
     public string Notation { get; private set; }
     private readonly StringBuilder _notation;
 
-    public NotationBuilder(PieceBase piece, PieceBase? targetPiece, Square from, Square to, PieceType? promotion, bool isCheck, bool isMate, Square? enpassantSquare)
+    public NotationBuilder(MoveInfo moveInfo)
     {
         _notation = new StringBuilder();
 
-        AddPieceType(piece, targetPiece);
-        AddTakes(targetPiece);
-        AddTargetLocation(to);
-        AddCastling(piece, from, to);
-        AddPromotion(piece, promotion);
-        AddCheck(isCheck, isMate);
-        AddEnpassant(piece, to, enpassantSquare);
+        AddPieceType(moveInfo.Piece, moveInfo.TargetPiece);
+        AddTakes(moveInfo.TargetPiece);
+        AddTargetLocation(moveInfo.To);
+        AddCastling(moveInfo.Piece, moveInfo.From, moveInfo.To);
+        AddPromotion(moveInfo.Piece, moveInfo.Promotion);
+        AddCheck(moveInfo.IsCheck, moveInfo.IsMate);
+        AddEnpassant(moveInfo.Piece, moveInfo.To, moveInfo.EnpassantSquare);
 
         Notation = _notation.ToString();
     }
