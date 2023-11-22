@@ -1,4 +1,5 @@
 ﻿
+using Logic.Chess.Utilities;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
@@ -59,7 +60,7 @@ public class Game
         SwitchSideToMove();
         UpdateGameState();
 
-        string moveNotation = BuildMoveNotation(piece, targetPiece, from, to, promotion);
+        string moveNotation = new NotationBuilder(piece, targetPiece, from, to, promotion, board.KingInCheck(SideToMove), board.KingIsMated(SideToMove), EnpassantSquare).Notation;
 
         return new MoveDto()
         {
@@ -120,50 +121,6 @@ public class Game
             board.MovePiece(from, to);
     }
 
-    private string BuildMoveNotation(PieceBase piece, PieceBase? targetPiece, Square from, Square to, PieceType? promotion)
-    {
-        string notation = "";
-
-        if (piece.Type == PieceType.PAWN && targetPiece != null)
-        {
-            notation += "e";
-        }
-        else
-        {
-            notation += piece.Notation;
-        }
-
-        if (targetPiece != null)
-            notation += "x";
-
-        notation += to.Notation;
-
-        if (piece.Type == PieceType.KING)
-        {
-            if ((from.Rank == 0 || from.Rank == 7) && to.File == 1)
-                notation = "O-O-O";
-            else if ((from.Rank == 0 || from.Rank == 7) && to.File == 6)
-                notation = "O-O";
-        }
-
-        if (promotion != null)
-        {
-            var tempPiece = PieceFactory.BuildPiece(promotion, piece.Side);
-
-            notation += $"={tempPiece.Notation}";
-        }
-
-        if (board.KingIsMated(SideToMove))
-            notation += "#";
-        else if (board.KingInCheck(SideToMove))
-            notation += "+";
-
-        if (piece.Type == PieceType.PAWN && to.Equals(board.EnpassantSquare))
-            notation += " e.p.";
-
-        return notation;
-    }
-
     private void UpdateEnpassantSquare(PieceBase piece, Square to)
     {
         if (piece.Type == PieceType.PAWN)
@@ -177,34 +134,40 @@ public class Game
 
     private void UpdateCastlingRights(PieceBase piece, Square from)
     {
-        if (SideToMove == Side.WHITE && (board.CastlingRightWhiteQueenSide || board.CastlingRightWhiteKingSide))
+        bool isWhite = SideToMove == Side.WHITE;
+        bool canCastleQueenSide = isWhite ? board.CastlingRightWhiteQueenSide : board.CastlingRightBlackQueenSide;
+        bool canCastleKingSide = isWhite ? board.CastlingRightWhiteKingSide : board.CastlingRightBlackKingSide;
+
+        if ((isWhite && (canCastleQueenSide || canCastleKingSide)) || (!isWhite && (canCastleQueenSide || canCastleKingSide)))
         {
             if (piece.Type == PieceType.KING)
             {
-                board.CastlingRightWhiteQueenSide = false;
-                board.CastlingRightWhiteKingSide = false;
+                if (isWhite)
+                {
+                    board.CastlingRightWhiteQueenSide = false;
+                    board.CastlingRightWhiteKingSide = false;
+                }
+                else
+                {
+                    board.CastlingRightBlackQueenSide = false;
+                    board.CastlingRightBlackKingSide = false;
+                }
             }
             else if (piece.Type == PieceType.ROOK)
             {
-                if (from.Rank == 7 && from.File == 0)
-                    board.CastlingRightWhiteQueenSide = false;
-                else if (from.Rank == 7 && from.File == 7)
-                    board.CastlingRightWhiteKingSide = false;
-            }
-        }
-        else if (SideToMove == Side.BLACK && (board.CastlingRightBlackQueenSide || board.CastlingRightBlackKingSide))
-        {
-            if (piece.Type == PieceType.KING)
-            {
-                board.CastlingRightBlackQueenSide = false;
-                board.CastlingRightBlackKingSide = false;
-            }
-            else if (piece.Type == PieceType.ROOK)
-            {
-                if (from.Rank == 0 && from.File == 0)
-                    board.CastlingRightWhiteQueenSide = false;
-                else if (from.Rank == 0 && from.File == 7)
-                    board.CastlingRightWhiteKingSide = false;
+                bool isQueenSide = from.Rank == (isWhite ? 7 : 0) && from.File == 0;
+                bool isKingSide = from.Rank == (isWhite ? 7 : 0) && from.File == 7;
+
+                if (isWhite)
+                {
+                    board.CastlingRightWhiteQueenSide = !isQueenSide;
+                    board.CastlingRightWhiteKingSide = !isKingSide;
+                }
+                else
+                {
+                    board.CastlingRightBlackQueenSide = !isQueenSide;
+                    board.CastlingRightBlackKingSide = !isKingSide;
+                }
             }
         }
     }

@@ -5,7 +5,7 @@ using SolveChess.Logic.Exceptions;
 
 namespace SolveChess.Logic.Chess.Factories;
 
-public class PieceFactory
+public static class PieceFactory
 {
 
     public static PieceBase BuildPiece(char type, Side side)
