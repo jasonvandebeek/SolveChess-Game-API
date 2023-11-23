@@ -17,7 +17,7 @@ public class Board
 
     public Square? EnpassantSquare { get; set; }
 
-    public string Fen { get { return BoardFenMapper.GetFenFromBoard(board); } }
+    public string Fen { get { return BoardFenMapper.GetFenFromBoard(this); } }
 
     public Board(string fen, bool castlingRightBlackKingSide = false, bool castlingRightBlackQueenSide = false, bool castlingRightWhiteKingSide = false, bool castlingRightWhiteQueenSide = false, Square? enpassantSquare = null)
     {
@@ -41,6 +41,18 @@ public class Board
         CastlingRightWhiteQueenSide = board.CastlingRightWhiteQueenSide;
 
         EnpassantSquare = board.EnpassantSquare;
+    }
+
+    public Board(PieceBase?[,] boardArray, bool castlingRightBlackKingSide = false, bool castlingRightBlackQueenSide = false, bool castlingRightWhiteKingSide = false, bool castlingRightWhiteQueenSide = false, Square? enpassantSquare = null)
+    {
+        board = boardArray;
+
+        CastlingRightBlackKingSide = castlingRightBlackKingSide;
+        CastlingRightBlackQueenSide = castlingRightBlackQueenSide;
+        CastlingRightWhiteKingSide = castlingRightWhiteKingSide;
+        CastlingRightWhiteQueenSide = castlingRightWhiteQueenSide;
+
+        EnpassantSquare = enpassantSquare;
     }
 
     public Square GetSquareOfPiece(PieceBase piece)

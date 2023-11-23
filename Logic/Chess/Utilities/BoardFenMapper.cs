@@ -11,16 +11,17 @@ namespace SolveChess.Logic.Chess.Utilities;
 public static class BoardFenMapper
 {
 
-    public static string GetFenFromBoard(PieceBase?[,] board)
+    public static string GetFenFromBoard(Board board)
     {
         var fen = new StringBuilder();
+        var boardArray = board.GetBoardArray();
 
-        for (int rank = 0; rank < board.GetLength(0); rank++)
+        for (int rank = 0; rank < boardArray.GetLength(0); rank++)
         {
             int empty = 0;
-            for (int file = 0; file < board.GetLength(1); file++)
+            for (int file = 0; file < boardArray.GetLength(1); file++)
             {
-                PieceBase? piece = board[rank, file];
+                PieceBase? piece = boardArray[rank, file];
                 if (piece == null)
                 {
                     empty += 1;
