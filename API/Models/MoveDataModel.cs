@@ -1,4 +1,4 @@
-﻿using API.ValidationAttributes;
+﻿using SolveChess.API.ValidationAttributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace SolveChess.API.Models;
@@ -12,6 +12,9 @@ public class MoveDataModel
     [Required]
     public Square To { get; set; } = null!;
 
+    [IsPromotionType]
+    public string? Promotion { get; set; }
+
 }
 
 public class Square
@@ -24,4 +27,6 @@ public class Square
     public int File { get; set; }
 
 }
+
+
 

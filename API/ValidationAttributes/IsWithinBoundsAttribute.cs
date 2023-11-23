@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace API.ValidationAttributes;
+namespace SolveChess.API.ValidationAttributes;
 
 public class IsWithinBoundsAttribute : ValidationAttribute
 {

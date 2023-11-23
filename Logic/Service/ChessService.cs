@@ -1,14 +1,14 @@
 ﻿
 using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
-using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
 using SolveChess.Logic.DTO;
+using SolveChess.Logic.Interfaces;
 
 namespace SolveChess.Logic.Service;
 
-public class ChessService
+public class ChessService : IChessService
 {
 
     private readonly IGameDal _gameDal;
@@ -26,6 +26,9 @@ public class ChessService
     public void PlayMoveOnGame(string gameId, string userId, Square from, Square to, PieceType? promotion)
     {
         var gameDto = _gameDal.GetGame(gameId);
+        if (gameDto.BlackPlayerId != userId && gameDto.WhitePlayerId != userId)
+            return;
+
         if ((gameDto.SideToMove != Side.BLACK && gameDto.BlackPlayerId == userId) || (gameDto.SideToMove != Side.WHITE && gameDto.WhitePlayerId == userId))
             return;
 
