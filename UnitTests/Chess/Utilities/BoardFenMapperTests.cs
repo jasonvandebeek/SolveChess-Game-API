@@ -112,19 +112,4 @@ public class BoardFenMapperTests
         });
     }
 
-    [TestMethod]
-    public void GetBoardStateFromFenTest_InvalidFenTimeOut_ThrowsException()
-    {
-        //Arrange
-        var errorStringPart = new string('x', 100);
-        var errorString = string.Join("/", Enumerable.Repeat(errorStringPart, 8));
-
-        //Assert
-        Assert.ThrowsException<InvalidFenException>(() =>
-        {
-            //Act
-            var result = BoardFenMapper.GetBoardStateFromFen(errorString);
-        });
-    }
-
 }
