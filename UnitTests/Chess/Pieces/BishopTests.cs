@@ -66,4 +66,23 @@ public class BishopTests
         CollectionAssert.AreEquivalent(expected, result);
     }
 
+    [TestMethod]
+    public void GetPossibleMovesTest_KingInCheck_OnlyMoveIsTake()
+    {
+        //Arrange
+        var startingSquare = new Square(3, 3);
+        var expected = new List<Square>() { new Square(5, 1) };
+
+        var board = new Board("8/8/8/3B4/8/1b6/8/3K4");
+        var piece = board.GetPieceAt(startingSquare);
+        if (piece == null)
+            return;
+
+        //Act
+        var result = piece.GetPossibleMoves(board).ToArray();
+
+        //Assert
+        CollectionAssert.AreEquivalent(expected, result);
+    }
+
 }

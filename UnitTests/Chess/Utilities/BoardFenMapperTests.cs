@@ -58,7 +58,6 @@ public class BoardFenMapperTests
         //Arrange
 
         //Act
-        var board = new Board(this.board);
         var result = BoardFenMapper.GetFenFromBoard(board);
 
         //Assert
@@ -88,7 +87,7 @@ public class BoardFenMapperTests
     }
 
     [TestMethod]
-    public void GetBoardStateFromFenTest_InvalidFen_ThrowsException()
+    public void GetBoardStateFromFenTest_InvalidFenRankLength_ThrowsException()
     {
         //Arrange
 
@@ -97,6 +96,34 @@ public class BoardFenMapperTests
         {
             //Act
             var result = BoardFenMapper.GetBoardStateFromFen("r2q1/p1p1kppp/1p2b2/2bpN3/4B2/R1PQ4/1P1KPP/1N3B1R");
+        });
+    }
+
+    [TestMethod]
+    public void GetBoardStateFromFenTest_InvalidFenStructure_ThrowsException()
+    {
+        //Arrange
+
+        //Assert
+        Assert.ThrowsException<InvalidFenException>(() =>
+        {
+            //Act
+            var result = BoardFenMapper.GetBoardStateFromFen("r2q1/p1p1kppp/1p2b2/2bpN3/4B2/R1PQ4/1P1KPP/1N3B1RWWQR");
+        });
+    }
+
+    [TestMethod]
+    public void GetBoardStateFromFenTest_InvalidFenTimeOut_ThrowsException()
+    {
+        //Arrange
+        var errorStringPart = new string('x', 100);
+        var errorString = string.Join("/", Enumerable.Repeat(errorStringPart, 8));
+
+        //Assert
+        Assert.ThrowsException<InvalidFenException>(() =>
+        {
+            //Act
+            var result = BoardFenMapper.GetBoardStateFromFen(errorString);
         });
     }
 

@@ -69,104 +69,26 @@ public abstract class PieceBase
 
     protected IEnumerable<Square> RookMoves(Board board)
     {
-        PieceBase?[,] boardArray = board.GetBoardArray();
-        Square startingPosition = board.GetSquareOfPiece(this);
-        var moves = new List<Square>();
+        var rankOffsets = new int[] { 1, 0, -1, 0 };
+        var fileOffsets = new int[] { 0, -1, 0, 1 };
 
-        for (int i = 0; i < 4; i++)
-        {
-            int rankOffset = new int[] { 1, 0, -1, 0 }[i];
-            int fileOffset = new int[] { 0, -1, 0, 1 }[i];
-
-            int rank = startingPosition.Rank + rankOffset;
-            int file = startingPosition.File + fileOffset;
-
-            while (IsWithinBoardBounds(rank, file))
-            {
-                PieceBase? target = boardArray[rank, file];
-
-                if (target != null)
-                {
-                    if (target.Side != _side)
-                        moves.Add(new Square(rank, file));
-
-                    break;
-                }
-
-                moves.Add(new Square(rank, file));
-
-                rank += rankOffset;
-                file += fileOffset;
-            }
-        }
-
-        return moves;
+        return MultiDirectionalTraceMoves(board, rankOffsets, fileOffsets);
     }
 
     protected IEnumerable<Square> KnightMoves(Board board)
     {
-        PieceBase?[,] boardArray = board.GetBoardArray();
-        Square startingPosition = board.GetSquareOfPiece(this);
-        var moves = new List<Square>();
+        var rankOffsets = new int[] { 1, 2, 2, 1, -1, -2, -2, -1 };
+        var fileOffsets = new int[] { 2, 1, -1, -2, -2, -1, 1, 2 };
 
-        for (int i = 0; i < 8; i++)
-        {
-            int rankOffset = new int[] { 1, 2, 2, 1, -1, -2, -2, -1 }[i];
-            int fileOffset = new int[] { 2, 1, -1, -2, -2, -1, 1, 2 }[i];
-
-            int rank = startingPosition.Rank + rankOffset;
-            int file = startingPosition.File + fileOffset;
-
-            if (!IsWithinBoardBounds(rank, file))
-                continue;
-
-            PieceBase? target = boardArray[rank, file];
-
-            if (target != null && target.Side == _side)
-                continue;
-
-            moves.Add(new Square(rank, file));
-        }
-
-        return moves;
+        return MultiPointSingularMoves(board, rankOffsets, fileOffsets);
     }
 
     protected IEnumerable<Square> BishopMoves(Board board)
     {
-        PieceBase?[,] boardArray = board.GetBoardArray();
-        Square startingPosition = board.GetSquareOfPiece(this);
-        var moves = new List<Square>();
+        var rankOffsets = new int[] { 1, 1, -1, -1 };
+        var fileOffsets = new int[] { 1, -1, 1, -1 };
 
-        for (int i = 0; i < 4; i++)
-        {
-            int rankOffset = new int[] { 1, 1, -1, -1 }[i];
-            int fileOffset = new int[] { 1, -1, 1, -1 }[i];
-
-            int rank = startingPosition.Rank + rankOffset;
-            int file = startingPosition.File + fileOffset;
-
-            while (IsWithinBoardBounds(rank, file))
-            {
-                PieceBase? target = boardArray[rank, file];
-
-                if (target != null)
-                {
-                    if (target.Side == _side)
-                        break;
-
-
-                    moves.Add(new Square(rank, file));
-                    break;
-                }
-
-                moves.Add(new Square(rank, file));
-
-                rank += rankOffset;
-                file += fileOffset;
-            }
-        }
-
-        return moves;
+        return MultiDirectionalTraceMoves(board, rankOffsets, fileOffsets);
     }
 
     protected IEnumerable<Square> QueenMoves(Board board)
@@ -176,32 +98,13 @@ public abstract class PieceBase
 
     protected IEnumerable<Square> KingMoves(Board board)
     {
-        PieceBase?[,] boardArray = board.GetBoardArray();
-        Square startingPosition = board.GetSquareOfPiece(this);
-        var moves = new List<Square>();
+        var rankOffsets = new int[] { 1, 1, 1, 0, 0, -1, -1, -1 };
+        var fileOffsets = new int[] { -1, 0, 1, -1, 1, -1, 0, 1 };
 
-        for (int i = 0; i < 8; i++)
-        {
-            int rankOffset = new int[] { 1, 1, 1, 0, 0, -1, -1, -1 }[i];
-            int fileOffset = new int[] { -1, 0, 1, -1, 1, -1, 0, 1 }[i];
-
-            int rank = startingPosition.Rank + rankOffset;
-            int file = startingPosition.File + fileOffset;
-
-            if (!IsWithinBoardBounds(rank, file))
-                continue;
-
-            PieceBase? target = boardArray[rank, file];
-
-            if (target != null && target.Side == _side)
-                continue;
-
-            moves.Add(new Square(rank, file));
-        }
-
+        var moves = MultiPointSingularMoves(board, rankOffsets, fileOffsets).ToList();
         return moves.Concat(KingCastlingMoves(board));
     }
-
+    
     private IEnumerable<Square> KingCastlingMoves(Board board)
     {
         if (Side == Side.WHITE)
@@ -221,6 +124,82 @@ public abstract class PieceBase
                 yield return new Square(0, 1);
         }
     }
+    
+    private IEnumerable<Square> MultiPointSingularMoves(Board board, int[] rankOffsets, int[] fileOffsets)
+    {
+        if (rankOffsets.Length != fileOffsets.Length)
+            yield break;
+
+        for (int i = 0; i < rankOffsets.Length; i++)
+        {
+            var move = SingularMove(board, rankOffsets[i], fileOffsets[i]);
+            if (move == null)
+                continue;
+
+            yield return move;
+        }
+    }
+
+    private IEnumerable<Square> MultiDirectionalTraceMoves(Board board, int[] rankOffsets, int[] fileOffsets)
+    {
+        if(rankOffsets.Length != fileOffsets.Length)
+            return Enumerable.Empty<Square>();
+
+        var moves = new List<Square>();
+
+        for (int i = 0; i < rankOffsets.Length; i++)
+        {
+            moves = moves.Concat(TraceMoves(board, rankOffsets[i], fileOffsets[i])).ToList();
+        }
+
+        return moves;
+    }
+
+    private IEnumerable<Square> TraceMoves(Board board, int rankOffset, int fileOffset)
+    {
+        Square startingPosition = board.GetSquareOfPiece(this);
+
+        int rank = startingPosition.Rank + rankOffset;
+        int file = startingPosition.File + fileOffset;
+
+        while (IsWithinBoardBounds(rank, file))
+        {
+            var targetSquare = new Square(rank, file);
+            PieceBase? targetPiece = board.GetPieceAt(targetSquare);
+
+            if (targetPiece != null)
+            {
+                if (targetPiece.Side != _side)
+                    yield return targetSquare;
+
+                break;
+            }
+
+            rank += rankOffset;
+            file += fileOffset;
+
+            yield return targetSquare;
+        }
+    }
+
+    private Square? SingularMove(Board board, int rankOffset, int fileOffset)
+    {
+        Square startingPosition = board.GetSquareOfPiece(this);
+
+        int rank = startingPosition.Rank + rankOffset;
+        int file = startingPosition.File + fileOffset;
+
+        if (!IsWithinBoardBounds(rank, file))
+            return null;
+
+        var targetSquare = new Square(rank, file);
+        PieceBase? targetPiece = board.GetPieceAt(targetSquare);
+        if (targetPiece != null && targetPiece.Side == _side)
+            return null;
+
+        return targetSquare;
+
+    }
 
     protected IEnumerable<Square> FilterOutIllegalMoves(IEnumerable<Square> moves, Board board)
     {
@@ -229,7 +208,7 @@ public abstract class PieceBase
         foreach(var move in moves)
         {
             var clone = new Board(board);
-            Square currentSquare = board.GetSquareOfPiece(this);
+            Square currentSquare = clone.GetSquareOfPiece(this);
 
             clone.MovePiece(currentSquare, move);
             if (!clone.KingInCheck(_side))

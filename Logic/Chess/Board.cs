@@ -8,7 +8,20 @@ namespace SolveChess.Logic.Chess;
 public class Board
 {
 
-    private readonly PieceBase?[,] board;
+    private readonly PieceBase?[,] _boardArray;
+    public PieceBase?[,] BoardArray 
+    { 
+        get 
+        {
+            PieceBase?[,] clonedArray = new PieceBase?[_boardArray.GetLength(0), _boardArray.GetLength(1)];
+
+            for (int rank = 0; rank < _boardArray.GetLength(0); rank++)
+                for (int file = 0; file < _boardArray.GetLength(1); file++)
+                    clonedArray[rank, file] = _boardArray[rank, file];
+
+            return clonedArray;
+        } 
+    }
 
     public bool CastlingRightBlackKingSide { get; set; }
     public bool CastlingRightBlackQueenSide { get; set; }
@@ -17,11 +30,11 @@ public class Board
 
     public Square? EnpassantSquare { get; set; }
 
-    public string Fen { get { return BoardFenMapper.GetFenFromBoard(this); } }
+    public string Fen { get { return BoardFenMapper.GetFenFromBoard(_boardArray); } }
 
     public Board(string fen, bool castlingRightBlackKingSide = false, bool castlingRightBlackQueenSide = false, bool castlingRightWhiteKingSide = false, bool castlingRightWhiteQueenSide = false, Square? enpassantSquare = null)
     {
-        board = BoardFenMapper.GetBoardStateFromFen(fen);
+        _boardArray = BoardFenMapper.GetBoardStateFromFen(fen);
 
         CastlingRightBlackKingSide = castlingRightBlackKingSide;
         CastlingRightBlackQueenSide = castlingRightBlackQueenSide;
@@ -33,7 +46,7 @@ public class Board
 
     public Board(Board board)
     {
-        this.board = board.GetBoardArray();
+        _boardArray = board.BoardArray;
 
         CastlingRightBlackKingSide = board.CastlingRightBlackKingSide;
         CastlingRightBlackQueenSide = board.CastlingRightBlackQueenSide;
@@ -43,25 +56,13 @@ public class Board
         EnpassantSquare = board.EnpassantSquare;
     }
 
-    public Board(PieceBase?[,] boardArray, bool castlingRightBlackKingSide = false, bool castlingRightBlackQueenSide = false, bool castlingRightWhiteKingSide = false, bool castlingRightWhiteQueenSide = false, Square? enpassantSquare = null)
-    {
-        board = boardArray;
-
-        CastlingRightBlackKingSide = castlingRightBlackKingSide;
-        CastlingRightBlackQueenSide = castlingRightBlackQueenSide;
-        CastlingRightWhiteKingSide = castlingRightWhiteKingSide;
-        CastlingRightWhiteQueenSide = castlingRightWhiteQueenSide;
-
-        EnpassantSquare = enpassantSquare;
-    }
-
     public Square GetSquareOfPiece(PieceBase piece)
     {
         for (int rank = 0; rank < 8; rank++)
         {
             for (int file = 0; file < 8; file++)
             {
-                if (piece.Equals(board[rank, file]))
+                if (piece.Equals(_boardArray[rank, file]))
                 {
                     return new Square(rank, file);
                 }
@@ -73,27 +74,23 @@ public class Board
 
     public PieceBase? GetPieceAt(Square square)
     {
-        return board[square.Rank, square.File];
-    }
-
-    public PieceBase?[,] GetBoardArray()
-    {
-        return board;
+        return _boardArray[square.Rank, square.File];
     }
 
     public void MovePiece(Square from, Square to)
     {
-        PieceBase? piece = board[from.Rank, from.File];
+        PieceBase? piece = _boardArray[from.Rank, from.File];
         if (piece == null)
             return;
 
-        board[from.Rank, from.File] = null;
-        board[to.Rank, to.File] = piece;
+        _boardArray[from.Rank, from.File] = null;
+        _boardArray[to.Rank, to.File] = piece;
     }
 
-    public bool CanPieceMoveTo(PieceBase piece, Square target)
+    public void PromotePiece(Square from, Square to, PieceBase promotionPiece)
     {
-        return piece.CanMoveToSquare(target, this);
+        _boardArray[from.Rank, from.File] = null;
+        _boardArray[to.Rank, to.File] = promotionPiece;
     }
 
     public bool KingInCheck(Side side)
@@ -110,7 +107,7 @@ public class Board
         if(KingInCheck(side)) 
             return false;
 
-        foreach (PieceBase? piece in board)
+        foreach (PieceBase? piece in _boardArray)
         {
             if (piece == null)
                 continue;
@@ -127,7 +124,7 @@ public class Board
         if(!KingInCheck(side)) 
             return false;
 
-        foreach(PieceBase? piece in board)
+        foreach(PieceBase? piece in _boardArray)
         {
             if(piece == null) 
                 continue;
@@ -139,13 +136,13 @@ public class Board
         return true;
     }
 
-    public King? GetKing(Side side)
+    private King? GetKing(Side side)
     {
-        for(int rank = 0; rank < board.GetLength(0); rank++)
+        for(int rank = 0; rank < _boardArray.GetLength(0); rank++)
         {
-            for(int file = 0; file < board.GetLength(1); file++)
+            for(int file = 0; file < _boardArray.GetLength(1); file++)
             {
-                PieceBase? piece = board[rank, file];
+                PieceBase? piece = _boardArray[rank, file];
 
                 if (piece == null || piece.Type != PieceType.KING || piece.Side != side)
                     continue;
@@ -155,12 +152,6 @@ public class Board
         }
 
         return null;
-    }
-
-    public void PromotePiece(Square from, Square to, PieceBase promotionPiece)
-    {
-        board[from.Rank, from.File] = null;
-        board[to.Rank, to.File] = promotionPiece;
     }
 
 }
