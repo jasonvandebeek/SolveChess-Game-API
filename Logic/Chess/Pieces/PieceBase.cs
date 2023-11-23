@@ -36,10 +36,10 @@ public abstract class PieceBase
 
     protected IEnumerable<Square> PawnMoves(Board board)
     {
+        var moves = new List<Square>();
         Square startingPosition = board.GetSquareOfPiece(this);
         int forwardDirection = _side == Side.WHITE ? -1 : 1;
-        var moves = new List<Square>();
-
+        
         void AddMove(int rankOffset, int fileOffset)
         {
             var targetSquare = new Square(startingPosition.Rank + rankOffset, startingPosition.File + fileOffset);

@@ -47,19 +47,16 @@ public class King : PieceBase
     
     private static bool AttackingPieceOfType(Board board, IEnumerable<Square> moves, PieceType type)
     {
-        bool found = false;
-
         foreach(var move in moves)
         {
             PieceBase? target = board.GetPieceAt(move);
             if(target != null && target.Type == type) 
-            { 
-                found = true;
-                break;
+            {
+                return true;
             }
         }
 
-        return found;
+        return false;
     }
 
 }
