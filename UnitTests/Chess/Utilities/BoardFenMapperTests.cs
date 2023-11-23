@@ -58,6 +58,7 @@ public class BoardFenMapperTests
         //Arrange
 
         //Act
+        var board = new Board(this.board);
         var result = BoardFenMapper.GetFenFromBoard(board);
 
         //Assert
