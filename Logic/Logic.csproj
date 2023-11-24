@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="ResultObjects\" />
+    <None Remove="Attributes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ResultObjects\" />
+    <Folder Include="Attributes\" />
+  </ItemGroup>
 </Project>

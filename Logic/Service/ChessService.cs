@@ -1,10 +1,12 @@
 ﻿
+using SolveChess.Logic.Attributes;
 using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
 using SolveChess.Logic.DTO;
 using SolveChess.Logic.Interfaces;
+using SolveChess.Logic.ResultObjects;
 
 namespace SolveChess.Logic.Service;
 
@@ -23,42 +25,60 @@ public class ChessService : IChessService
         throw new NotImplementedException();
     }
 
-    public void PlayMoveOnGame(string gameId, string userId, Square from, Square to, PieceType? promotion)
+    public MoveResult PlayMoveOnGame(string gameId, string userId, Square from, Square to, PieceType? promotion)
     {
         var gameDto = _gameDal.GetGame(gameId);
         if (gameDto.BlackPlayerId != userId && gameDto.WhitePlayerId != userId)
-            return;
+            return new MoveResult(StatusCode.FAILURE, "User has no access to this game!");
 
         if ((gameDto.SideToMove != Side.BLACK && gameDto.BlackPlayerId == userId) || (gameDto.SideToMove != Side.WHITE && gameDto.WhitePlayerId == userId))
-            return;
+            return new MoveResult(StatusCode.FAILURE, "It's not the users turn!");
 
         var game = new Game(gameDto);
-        MoveDto? moveDto = game.PlayMove(from, to, promotion);
-        if (moveDto == null)
-            return;
+        MoveResult moveResult = game.PlayMove(from, to, promotion);
+        if (!moveResult.Succeeded)
+            return moveResult;
 
-        var updatedGameDto = new GameDto()
+        if (moveResult.MoveDto == null)
+            return new MoveResult(StatusCode.FAILURE, "There was an unexpected problem when playing your move!");
+
+        try
         {
-            Id = gameDto.Id,
-            WhitePlayerId = gameDto.WhitePlayerId,
-            BlackPlayerId = gameDto.BlackPlayerId,
-            State = game.State,
-            Fen = game.Fen,
-            SideToMove = game.SideToMove,
-            FullMoveNumber = game.FullMoveNumber,
-            HalfMoveClock = game.HalfMoveClock,
-            CastlingRightBlackKingSide = game.CastlingRightBlackKingSide,
-            CastlingRightBlackQueenSide = game.CastlingRightBlackQueenSide,
-            CastlingRightWhiteKingSide = game.CastlingRightWhiteKingSide,
-            CastlingRightWhiteQueenSide = game.CastlingRightWhiteQueenSide,
-            EnpassantSquare = game.EnpassantSquare,
-        };
+            var updatedGameDto = new GameDto()
+            {
+                Id = gameDto.Id,
+                WhitePlayerId = gameDto.WhitePlayerId,
+                BlackPlayerId = gameDto.BlackPlayerId,
+                State = game.State,
+                Fen = game.Fen,
+                SideToMove = game.SideToMove,
+                FullMoveNumber = game.FullMoveNumber,
+                HalfMoveClock = game.HalfMoveClock,
+                CastlingRightBlackKingSide = game.CastlingRightBlackKingSide,
+                CastlingRightBlackQueenSide = game.CastlingRightBlackQueenSide,
+                CastlingRightWhiteKingSide = game.CastlingRightWhiteKingSide,
+                CastlingRightWhiteQueenSide = game.CastlingRightWhiteQueenSide,
+                EnpassantSquare = game.EnpassantSquare,
+            };
 
-        _gameDal.UpdateGame(updatedGameDto);
-        _gameDal.AddMove(gameId, moveDto);
+            _gameDal.UpdateGame(updatedGameDto);
+            _gameDal.AddMove(gameId, moveResult.MoveDto);
+
+            return moveResult;
+        }
+        catch(Exception exception)
+        {
+            return new MoveResult(StatusCode.EXCEPTION, exception);
+        }
+        
     }
 
     public IEnumerable<MoveDto> GetMoves(string gameId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void CreateGame()
     {
         throw new NotImplementedException();
     }

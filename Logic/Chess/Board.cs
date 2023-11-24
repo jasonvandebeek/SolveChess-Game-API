@@ -126,11 +126,8 @@ public class Board
 
         foreach(PieceBase? piece in _boardArray)
         {
-            if(piece == null) 
-                continue;
-
-            if (piece.GetPossibleMoves(this).Any())
-                return false;
+            if (piece != null)
+                return !piece.GetPossibleMoves(this).Any();
         }
 
         return true;

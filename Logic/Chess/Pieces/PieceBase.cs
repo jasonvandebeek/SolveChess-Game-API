@@ -162,7 +162,8 @@ public abstract class PieceBase
         int rank = startingPosition.Rank + rankOffset;
         int file = startingPosition.File + fileOffset;
 
-        while (IsWithinBoardBounds(rank, file))
+        bool keepLooking = true;
+        while (IsWithinBoardBounds(rank, file) && keepLooking)
         {
             var targetSquare = new Square(rank, file);
             PieceBase? targetPiece = board.GetPieceAt(targetSquare);
@@ -172,13 +173,15 @@ public abstract class PieceBase
                 if (targetPiece.Side != _side)
                     yield return targetSquare;
 
-                break;
+                keepLooking = false;
             }
+            else
+            {
+                rank += rankOffset;
+                file += fileOffset;
 
-            rank += rankOffset;
-            file += fileOffset;
-
-            yield return targetSquare;
+                yield return targetSquare;
+            }
         }
     }
 

@@ -1,11 +1,13 @@
 ﻿
 using Logic.Chess.Utilities;
+using SolveChess.Logic.Attributes;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DTO;
 using SolveChess.Logic.Exceptions;
+using SolveChess.Logic.ResultObjects;
 
 namespace SolveChess.Logic.Chess;
 
@@ -38,11 +40,17 @@ public class Game
         SideToMove = gameDTO.SideToMove;
     }
 
-    public MoveDto? PlayMove(Square from, Square to, PieceType? promotion)
+    public MoveResult PlayMove(Square from, Square to, PieceType? promotion)
     {
         PieceBase? piece = board.GetPieceAt(from);
-        if (piece == null || piece.Side != SideToMove || piece.CanMoveToSquare(to, board))
-            return null;
+        if (piece == null)
+            return new MoveResult(StatusCode.FAILURE, "No piece found at that square!");
+
+        if (piece.Side != SideToMove)
+            return new MoveResult(StatusCode.FAILURE, "User can't move pieces of that side!");
+
+        if (piece.CanMoveToSquare(to, board))
+            return new MoveResult(StatusCode.FAILURE, "Invalid move!");
 
         UpdateEnpassantSquare(piece, to);
         UpdateCastlingRights(piece, SideToMove, from);
@@ -74,12 +82,14 @@ public class Game
 
         string moveNotation = new NotationBuilder(moveInfo).Notation;
 
-        return new MoveDto()
+        var moveDto = new MoveDto()
         {
             Number = fullMoveNumber,
             Side = piece.Side,
             Notation = moveNotation
         };
+
+        return new MoveResult(StatusCode.SUCCESS, moveDto);
     }
 
     private void UpdateHalfMoveClock(PieceBase piece, PieceBase? targetPiece)
