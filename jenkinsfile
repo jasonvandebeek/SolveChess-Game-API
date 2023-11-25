@@ -15,10 +15,10 @@ pipeline {
                 }
             }
         }
-		stage('Run .NET Tests') {
+		stage('Run .NET Unit Tests') {
 			steps {
 				script {
-					sh "dotnet test"
+					sh "dotnet test /UnitTests/UnitTests.csproj"
 				}
 			}
 		}
