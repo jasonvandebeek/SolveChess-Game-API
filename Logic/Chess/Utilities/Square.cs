@@ -1,9 +1,10 @@
 ﻿
+using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Exceptions;
 
 namespace SolveChess.Logic.Chess.Utilities;
 
-public class Square
+public class Square : ISquare
 {
 
     private readonly int _file;

@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SolveChess.DAL.Model;
 
-public class Move
+public class MoveModel
 {
 
     [ForeignKey("GameId")]
-    public Game Game { get; set; } = null!;
+    public GameModel Game { get; set; } = null!;
     [Key]
     public string GameId { get; set; } = null!;
 

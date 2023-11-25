@@ -2,6 +2,7 @@
 using SolveChess.Logic.Attributes;
 using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
+using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
 using SolveChess.Logic.DTO;
@@ -13,56 +14,43 @@ namespace SolveChess.Logic.Service;
 public class ChessService : IChessService
 {
 
+    private readonly IClientCommunicationService _clientCommunicationService;
     private readonly IGameDal _gameDal;
 
-    public ChessService(IGameDal gameDal)
+    public ChessService(IGameDal gameDal, IClientCommunicationService clientCommunicationService)
     {
+        _clientCommunicationService = clientCommunicationService;
         _gameDal = gameDal;
     }
 
-    public bool UserHasAccessToGame(string gameId, string userId)
+    public async Task<bool> UserHasAccessToGame(string gameId, string userId)
     {
-        throw new NotImplementedException();
+        GameInfoModel gameInfoModel = await GetGameWithId(gameId);
+        return UserHasAccessToGame(gameInfoModel, userId);
     }
 
-    public MoveResult PlayMoveOnGame(string gameId, string userId, Square from, Square to, PieceType? promotion)
-    {
-        var gameDto = _gameDal.GetGame(gameId);
-        if (gameDto.BlackPlayerId != userId && gameDto.WhitePlayerId != userId)
-            return new MoveResult(StatusCode.FAILURE, "User has no access to this game!");
-
-        if ((gameDto.SideToMove != Side.BLACK && gameDto.BlackPlayerId == userId) || (gameDto.SideToMove != Side.WHITE && gameDto.WhitePlayerId == userId))
-            return new MoveResult(StatusCode.FAILURE, "It's not the users turn!");
-
-        var game = new Game(gameDto);
-        MoveResult moveResult = game.PlayMove(from, to, promotion);
-        if (!moveResult.Succeeded)
-            return moveResult;
-
-        if (moveResult.MoveDto == null)
-            return new MoveResult(StatusCode.FAILURE, "There was an unexpected problem when playing your move!");
-
+    public async Task<MoveResult> PlayMoveOnGame(string gameId, string userId, ISquare from, ISquare to, string? promotion)
+    { 
         try
         {
-            var updatedGameDto = new GameDto()
-            {
-                Id = gameDto.Id,
-                WhitePlayerId = gameDto.WhitePlayerId,
-                BlackPlayerId = gameDto.BlackPlayerId,
-                State = game.State,
-                Fen = game.Fen,
-                SideToMove = game.SideToMove,
-                FullMoveNumber = game.FullMoveNumber,
-                HalfMoveClock = game.HalfMoveClock,
-                CastlingRightBlackKingSide = game.CastlingRightBlackKingSide,
-                CastlingRightBlackQueenSide = game.CastlingRightBlackQueenSide,
-                CastlingRightWhiteKingSide = game.CastlingRightWhiteKingSide,
-                CastlingRightWhiteQueenSide = game.CastlingRightWhiteQueenSide,
-                EnpassantSquare = game.EnpassantSquare,
-            };
+            GameInfoModel gameInfoModel = await GetGameWithId(gameId);
+            if (!UserHasAccessToGame(gameInfoModel, userId)) 
+                return new MoveResult(StatusCode.FAILURE, "User has no access to this game!");
 
-            _gameDal.UpdateGame(updatedGameDto);
-            _gameDal.AddMove(gameId, moveResult.MoveDto);
+            if (IsUserToMove(gameInfoModel, userId))
+                return new MoveResult(StatusCode.FAILURE, "It's not the users turn!");
+
+            PieceType? promotionType = promotion != null ? (PieceType)Enum.Parse(typeof(PieceType), promotion) : null;
+            MoveResult moveResult = gameInfoModel.Game.PlayMove((Square)from, (Square)to, promotionType);
+            if (!moveResult.Succeeded)
+                return moveResult;
+
+            if (moveResult.Move == null)
+                return new MoveResult(StatusCode.FAILURE, "There was an unexpected problem when playing your move!");
+
+            await _gameDal.UpdateGame(gameId, gameInfoModel.Game, moveResult.Move);
+
+            await _clientCommunicationService.SendMoveToGame(gameId, moveResult.Move);
 
             return moveResult;
         }
@@ -73,14 +61,30 @@ public class ChessService : IChessService
         
     }
 
-    public IEnumerable<MoveDto> GetMoves(string gameId)
+    public async Task<IEnumerable<Move>> GetPlayedMovesForGame(string gameId)
     {
         throw new NotImplementedException();
     }
 
-    public void CreateGame()
+    public async Task CreateNewGame(string playerOneUserId, string playerTwoUserId, string? WhiteSideUserId)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<GameInfoModel> GetGameWithId(string gameId)
+    {
+        return await _gameDal.GetGameWithId(gameId);
+    }
+
+
+    private static bool UserHasAccessToGame(GameInfoModel gameInfoModel, string userId)
+    {
+        return gameInfoModel.BlackPlayerId != userId || gameInfoModel.WhitePlayerId != userId;
+    }
+
+    private static bool IsUserToMove(GameInfoModel gameInfoModel, string userId)
+    {
+        return (gameInfoModel.Game.SideToMove != Side.BLACK && gameInfoModel.BlackPlayerId == userId) || (gameInfoModel.Game.SideToMove != Side.WHITE && gameInfoModel.WhitePlayerId == userId);
     }
 
 }

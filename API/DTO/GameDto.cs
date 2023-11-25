@@ -1,14 +1,12 @@
 ﻿
-using SolveChess.Logic.Chess.Attributes;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SolveChess.DAL.Model;
+namespace SolveChess.API.DTO;
 
-public class Game
+public class GameDto
 {
 
-    [Key]
+    [Required]
     public string Id { get; set; } = null!;
 
     [Required]
@@ -16,23 +14,20 @@ public class Game
     [Required]
     public string BlackPlayerId { get; set; } = null!;
 
-    public GameState State { get; set; }
+    [Required]
+    public string State { get; set; } = null!;
 
     [Required]
     public string Fen { get; set; } = null!;
 
-    public int FullMoveNumber { get; set; }
-    public int HalfMoveClock { get; set; }
-
-    public Side SideToMove { get; set; }
+    [Required]
+    public string SideToMove { get; set; } = null!;
 
     public bool CastlingRightBlackKingSide { get; set; }
     public bool CastlingRightBlackQueenSide { get; set; }
     public bool CastlingRightWhiteKingSide { get; set; }
     public bool CastlingRightWhiteQueenSide { get; set; }
 
-    public int? EnpassantSquareRank { get; set; }
-    public int? EnpassantSquareFile { get; set; }
+    public SquareDto? EnpassantSquare { get; set; }
 
 }
-

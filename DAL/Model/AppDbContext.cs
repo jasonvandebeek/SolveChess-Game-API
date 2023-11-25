@@ -11,20 +11,20 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<Game> Game { get; set; }
-    public DbSet<Move> Move { get; set; }
+    public DbSet<GameModel> Game { get; set; }
+    public DbSet<MoveModel> Move { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Game>()
+        modelBuilder.Entity<GameModel>()
             .Property(g => g.EnpassantSquareRank)
             .IsRequired(false);
 
-        modelBuilder.Entity<Game>()
+        modelBuilder.Entity<GameModel>()
             .Property(g => g.EnpassantSquareFile)
             .IsRequired(false);
 
-        modelBuilder.Entity<Move>()
+        modelBuilder.Entity<MoveModel>()
             .HasKey(m => new { m.GameId, m.Number, m.Side});
     }
 

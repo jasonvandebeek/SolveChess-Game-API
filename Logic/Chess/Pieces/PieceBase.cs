@@ -226,5 +226,10 @@ public abstract class PieceBase
         return rank >= 0 && rank < 8 && file >= 0 && file < 8;
     }
 
+    public bool HasPossibleMoves(Board board)
+    {
+        return GetPossibleMoves(board).Any();
+    }
+
 }
 

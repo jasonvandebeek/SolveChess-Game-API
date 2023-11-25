@@ -2,7 +2,6 @@
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
-using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.Exceptions;
 
 namespace SolveChess.Logic.Chess.Utilities.Tests;

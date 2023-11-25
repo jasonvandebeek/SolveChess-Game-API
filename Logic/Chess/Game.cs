@@ -19,8 +19,8 @@ public class Game
     private readonly Board board;
     public string Fen { get { return board.Fen; } }
 
-    public int FullMoveNumber { get; private set; } = 0;
-    public int HalfMoveClock { get; private set; } = 0;
+    public int FullMoveNumber { get; private set; }
+    public int HalfMoveClock { get; private set; }
 
     public Side SideToMove { get; private set; }
 
@@ -31,13 +31,13 @@ public class Game
 
     public Square? EnpassantSquare { get { return board.EnpassantSquare; } }
 
-    public Game(GameDto gameDTO)
+    public Game(GameStateModel gameState)
     {
-        State = gameDTO.State;
-        board = new Board(gameDTO.Fen, gameDTO.CastlingRightBlackKingSide, gameDTO.CastlingRightBlackQueenSide, gameDTO.CastlingRightWhiteKingSide, gameDTO.CastlingRightWhiteQueenSide, gameDTO.EnpassantSquare);
-        FullMoveNumber = gameDTO.FullMoveNumber;
-        HalfMoveClock = gameDTO.HalfMoveClock;
-        SideToMove = gameDTO.SideToMove;
+        State = gameState.State;
+        board = new Board(gameState.Fen, gameState.CastlingRightBlackKingSide, gameState.CastlingRightBlackQueenSide, gameState.CastlingRightWhiteKingSide, gameState.CastlingRightWhiteQueenSide, gameState.EnpassantSquare);
+        FullMoveNumber = gameState.FullMoveNumber;
+        HalfMoveClock = gameState.HalfMoveClock;
+        SideToMove = gameState.SideToMove;
     }
 
     public MoveResult PlayMove(Square from, Square to, PieceType? promotion)
@@ -82,14 +82,9 @@ public class Game
 
         string moveNotation = new NotationBuilder(moveInfo).Notation;
 
-        var moveDto = new MoveDto()
-        {
-            Number = fullMoveNumber,
-            Side = piece.Side,
-            Notation = moveNotation
-        };
+        var move = new Move(fullMoveNumber, piece.Side, moveNotation);
 
-        return new MoveResult(StatusCode.SUCCESS, moveDto);
+        return new MoveResult(StatusCode.SUCCESS, move);
     }
 
     private void UpdateHalfMoveClock(PieceBase piece, PieceBase? targetPiece)
@@ -127,17 +122,10 @@ public class Game
     {
         if (piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && to.Rank == 0 || piece.Side == Side.BLACK && to.Rank == 7))
         {
-            if (promotion != null)
-            {
-                if (promotion == PieceType.PAWN || promotion == PieceType.KING)
-                    throw new PromotionException("Invalid promotion piece!");
+            if (promotion == PieceType.PAWN || promotion == PieceType.KING)
+                throw new PromotionException("Invalid promotion piece!");
 
-                var promotionPiece = PieceFactory.BuildPiece(promotion, piece.Side);
-
-                board.PromotePiece(from, to, promotionPiece);
-            }
-            else
-                throw new PromotionException("Promotion expected!");
+            board.PromotePiece(from, to, promotion ?? throw new PromotionException("Invalid promotion type!"));
         }
         else
             board.MovePiece(from, to);

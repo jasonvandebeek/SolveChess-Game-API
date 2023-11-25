@@ -1,13 +1,11 @@
-﻿using Google.Protobuf;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using SolveChess.API.DTO;
 using SolveChess.API.Models;
-using SolveChess.API.Websocket;
-using SolveChess.Logic.Chess.Attributes;
+using SolveChess.Logic.Chess.Interfaces;
+using SolveChess.Logic.DTO;
 using SolveChess.Logic.Interfaces;
 using SolveChess.Logic.ResultObjects;
-using Square = SolveChess.Logic.Chess.Utilities.Square;
 
 namespace SolveChess.API.Controllers;
 
@@ -16,28 +14,22 @@ namespace SolveChess.API.Controllers;
 public class GameController : Controller
 {
 
-    private readonly IHubContext<SignalrHub> _hubContext;
     private readonly IChessService _chessService;
 
-    public GameController(IHubContext<SignalrHub> hubContext, IChessService chessService)
+    public GameController(IChessService chessService)
     {
-        _hubContext = hubContext;
         _chessService = chessService;
     }
 
     [Authorize]
     [HttpPost("{gameId}/move")]
-    public async Task<IActionResult> PlayMove(string gameId, [FromBody] MoveDataModel move)
+    public async Task<IActionResult> PlayMove(string gameId, [FromBody] MoveDataDto moveDto)
     {
-        string? userId = HttpContext.User.FindFirst("Id")?.Value;
+        string? userId = GetUserIdFromCookies();
         if (userId == null)
             return Unauthorized();
 
-        var from = new Square(move.From.Rank, move.From.File);
-        var to = new Square(move.To.Rank, move.To.File);
-        PieceType? promotionType = move.Promotion != null ? (PieceType) Enum.Parse(typeof(PieceType), move.Promotion) : null;
-
-        MoveResult moveResult = _chessService.PlayMoveOnGame(gameId, userId, from, to, promotionType);
+        MoveResult moveResult = await _chessService.PlayMoveOnGame(gameId, userId, moveDto.From, moveDto.To, moveDto.Promotion);
         if (!moveResult.Succeeded)
         {
             if (moveResult.Exception != null)
@@ -46,20 +38,48 @@ public class GameController : Controller
             return BadRequest(moveResult.Message);
         }
 
-        await _hubContext.Clients.Group(gameId).SendAsync("ReceiveMove", moveResult.MoveDto);
-
         return Ok();
     }
 
     [Authorize]
     [HttpPost]
-    public IActionResult CreateGame()
+    public async Task<IActionResult> CreateGame([FromBody] GameCreationDto gameCreationDto) //Add creation model
     {
-        string? userId = HttpContext.User.FindFirst("Id")?.Value;
+        string? userId = GetUserIdFromCookies();
         if (userId == null)
             return Unauthorized();
 
+        await _chessService.CreateNewGame(gameCreationDto.PlayerOneUserId, gameCreationDto.PlayerTwoUserId, gameCreationDto.WhiteSideUserId);
+        return Ok();
+    }
 
+    [HttpGet("{gameId}")]
+    public async Task<IActionResult> GetGame(string gameId)
+    {
+        GameInfoModel gameInfo = await _chessService.GetGameWithId(gameId);
+
+        var gameDto = new GameDto()
+        {
+            Id = gameInfo.Id,
+            WhitePlayerId = gameInfo.WhitePlayerId,
+            BlackPlayerId = gameInfo.BlackPlayerId,
+            State = gameInfo.Game.State.ToString(),
+            Fen = gameInfo.Game.Fen,
+            SideToMove = gameInfo.Game.SideToMove.ToString(),
+            CastlingRightBlackKingSide = gameInfo.Game.CastlingRightBlackKingSide,
+            CastlingRightBlackQueenSide = gameInfo.Game.CastlingRightBlackQueenSide,
+            CastlingRightWhiteKingSide = gameInfo.Game.CastlingRightWhiteKingSide,
+            CastlingRightWhiteQueenSide = gameInfo.Game.CastlingRightWhiteQueenSide,
+            EnpassantSquare = (gameInfo.Game.EnpassantSquare as ISquare) as SquareDto
+        };
+
+        return Ok(gameDto);
+    }
+
+
+    private string? GetUserIdFromCookies()
+    {
+        return HttpContext.User.FindFirst("Id")?.Value;
     }
 
 }

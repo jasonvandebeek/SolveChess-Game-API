@@ -1,6 +1,6 @@
-﻿using System;
+﻿
 using SolveChess.Logic.Attributes;
-using SolveChess.Logic.DTO;
+using SolveChess.Logic.Chess.Utilities;
 
 namespace SolveChess.Logic.ResultObjects;
 
@@ -10,7 +10,7 @@ public class MoveResult
 	public StatusCode Status { get; set; }
 	public string Message { get; set; } = "";
 
-	public MoveDto? MoveDto { get; set; }
+	public Move? Move { get; set; }
 
 	public Exception? Exception { get; set; }
 
@@ -21,9 +21,9 @@ public class MoveResult
 		Status = status;
 	}
 
-	public MoveResult(StatusCode status, MoveDto move, string message = "") : this(status, message)
+	public MoveResult(StatusCode status, Move move, string message = "") : this(status, message)
 	{
-		MoveDto = move;
+		Move = move;
 	}
 
 	public MoveResult(StatusCode status, string message) : this(status)

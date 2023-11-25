@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using SolveChess.DAL.Model;
+using SolveChess.Logic.Chess;
+using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
 using SolveChess.Logic.DTO;
 
@@ -13,22 +15,17 @@ public class GameDal : AppDbContext, IGameDal
     { 
     }
 
-    public void AddMove(string gameId, MoveDto move)
+    public Task<IEnumerable<Move>> GetMovesForGame(string gameId)
     {
         throw new NotImplementedException();
     }
 
-    public GameDto GetGame(string gameId)
+    public Task UpdateGame(string gameId, Game game, Move move)
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<MoveDto> GetMoves(string gameId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void UpdateGame(GameDto game)
+    public Task<GameInfoModel> GetGameWithId(string gameId)
     {
         throw new NotImplementedException();
     }

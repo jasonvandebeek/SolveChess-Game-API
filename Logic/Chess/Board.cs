@@ -1,7 +1,9 @@
 ﻿
 using SolveChess.Logic.Chess.Attributes;
+using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
+using System.Drawing;
 
 namespace SolveChess.Logic.Chess;
 
@@ -60,13 +62,9 @@ public class Board
     {
         for (int rank = 0; rank < 8; rank++)
         {
-            for (int file = 0; file < 8; file++)
-            {
-                if (piece.Equals(_boardArray[rank, file]))
-                {
-                    return new Square(rank, file);
-                }
-            }
+            Square? square = FindPieceOnRank(rank, piece);
+            if(square != null)
+                return square;
         }
 
         throw new InvalidOperationException("Invalid board given with piece!");
@@ -79,7 +77,7 @@ public class Board
 
     public void MovePiece(Square from, Square to)
     {
-        PieceBase? piece = _boardArray[from.Rank, from.File];
+        PieceBase? piece = GetPieceAt(from);
         if (piece == null)
             return;
 
@@ -87,8 +85,14 @@ public class Board
         _boardArray[to.Rank, to.File] = piece;
     }
 
-    public void PromotePiece(Square from, Square to, PieceBase promotionPiece)
+    public void PromotePiece(Square from, Square to, PieceType promotionType)
     {
+        PieceBase? piece = GetPieceAt(from);
+        if (piece == null)
+            return;
+
+        var promotionPiece = PieceFactory.BuildPiece(promotionType, piece.Side);
+
         _boardArray[from.Rank, from.File] = null;
         _boardArray[to.Rank, to.File] = promotionPiece;
     }
@@ -107,16 +111,7 @@ public class Board
         if(KingInCheck(side)) 
             return false;
 
-        foreach (PieceBase? piece in _boardArray)
-        {
-            if (piece == null)
-                continue;
-
-            if (piece.GetPossibleMoves(this).Any())
-                return false;
-        }
-
-        return true;
+        return !AnyPieceOfSideHasMoves(side);
     }
 
     public bool KingIsMated(Side side)
@@ -124,32 +119,67 @@ public class Board
         if(!KingInCheck(side)) 
             return false;
 
-        foreach(PieceBase? piece in _boardArray)
+        return !AnyPieceOfSideHasMoves(side);
+    }
+
+
+    private bool IsPieceAtPosition(PieceBase piece, int rank, int file) 
+    {
+        return piece.Equals(_boardArray[rank, file]);
+    }   
+
+    private Square? FindPieceOnRank(int rank, PieceBase piece)
+    {
+        for (int file = 0; file < _boardArray.GetLength(1); file++)
         {
-            if (piece != null)
-                return !piece.GetPossibleMoves(this).Any();
+            if (IsPieceAtPosition(piece, rank, file))
+                return new Square(rank, file);
         }
 
-        return true;
+        return null;
     }
 
     private King? GetKing(Side side)
     {
         for(int rank = 0; rank < _boardArray.GetLength(0); rank++)
         {
-            for(int file = 0; file < _boardArray.GetLength(1); file++)
-            {
-                PieceBase? piece = _boardArray[rank, file];
-
-                if (piece == null || piece.Type != PieceType.KING || piece.Side != side)
-                    continue;
-
-                return (King) piece;
-            }
+            King? king = FindKingOnRank(side, rank);
+            if(king != null)
+                return king;
         }
 
         return null;
     }
+
+    private bool AnyPieceOfSideHasMoves(Side side)
+    {
+        foreach (PieceBase? piece in _boardArray)
+        {
+            if (piece != null && piece.Side == side && piece.HasPossibleMoves(this))
+                return true;
+        }
+
+        return false;
+    }
+
+    private King? FindKingOnRank(Side side, int rank)
+    {
+        for (int file = 0; file < _boardArray.GetLength(1); file++)
+        {
+            if (PositionHasKingOfSide(side, rank, file))
+                return GetPieceAt(new Square(rank, file)) as King;
+        }
+
+        return null;
+    }
+
+    private bool PositionHasKingOfSide(Side side, int rank, int file)
+    {
+        PieceBase? piece = _boardArray[rank, file];
+
+        return piece != null && piece.Type == PieceType.KING && piece.Side == side;
+    }
+
 
 }
 
