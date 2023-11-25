@@ -2,7 +2,7 @@
 using SolveChess.Logic.Chess;
 using System.ComponentModel.DataAnnotations;
 
-namespace SolveChess.Logic.DTO;
+namespace SolveChess.Logic.Models;
 
 public class GameInfoModel
 {

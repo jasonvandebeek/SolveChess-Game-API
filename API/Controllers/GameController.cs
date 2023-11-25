@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SolveChess.API.DTO;
 using SolveChess.API.Models;
 using SolveChess.Logic.Chess.Interfaces;
-using SolveChess.Logic.DTO;
+using SolveChess.Logic.Models;
 using SolveChess.Logic.Interfaces;
 using SolveChess.Logic.ResultObjects;
 

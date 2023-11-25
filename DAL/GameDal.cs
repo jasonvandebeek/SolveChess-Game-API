@@ -4,7 +4,7 @@ using SolveChess.DAL.Model;
 using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
-using SolveChess.Logic.DTO;
+using SolveChess.Logic.Models;
 
 namespace SolveChess.DAL;
 

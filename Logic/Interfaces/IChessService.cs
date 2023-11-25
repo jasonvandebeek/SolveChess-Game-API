@@ -1,7 +1,7 @@
 ﻿using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Chess.Utilities;
-using SolveChess.Logic.DTO;
+using SolveChess.Logic.Models;
 using SolveChess.Logic.ResultObjects;
 
 namespace SolveChess.Logic.Interfaces;

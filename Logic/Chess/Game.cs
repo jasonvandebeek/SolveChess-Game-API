@@ -5,7 +5,7 @@ using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
-using SolveChess.Logic.DTO;
+using SolveChess.Logic.Models;
 using SolveChess.Logic.Exceptions;
 using SolveChess.Logic.ResultObjects;
 

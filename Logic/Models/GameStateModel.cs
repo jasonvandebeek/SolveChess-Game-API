@@ -3,7 +3,7 @@ using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
 using System.ComponentModel.DataAnnotations;
 
-namespace SolveChess.Logic.DTO;
+namespace SolveChess.Logic.Models;
 
 public class GameStateModel
 {

@@ -1,7 +1,7 @@
 ﻿
 using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Utilities;
-using SolveChess.Logic.DTO;
+using SolveChess.Logic.Models;
 
 namespace SolveChess.Logic.DAL;
 
