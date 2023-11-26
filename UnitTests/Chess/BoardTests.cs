@@ -59,6 +59,25 @@ public class BoardTests
     }
 
     [TestMethod]
+    public void MovePieceTest_MovingNull()
+    {
+        //Arrange
+        var board = new Board("8/8/8/3P4/8/8/8/8");
+        var from = new Square(4, 3);
+        var to = new Square(3, 3);
+        var piece = board.BoardArray[3, 3]!;
+
+        //Act
+        board.MovePiece(from, to);
+        var pieceAtOldLocation = board.BoardArray[4, 3];
+        var pieceAtNewLocation = board.BoardArray[3, 3];
+
+        //Assert
+        Assert.AreEqual(null, pieceAtOldLocation);
+        Assert.AreEqual(piece, pieceAtNewLocation);
+    }
+
+    [TestMethod]
     public void PromotePieceTest()
     {
         //Arrange
@@ -75,6 +94,25 @@ public class BoardTests
         //Assert
         Assert.AreEqual(result.Side, piece.Side);
         Assert.AreEqual(result.Type, promotionType);
+    }
+
+    [TestMethod]
+    public void PromotePieceTest_PromotingNull()
+    {
+        //Arrange
+        var board = new Board("8/3P4/8/8/8/8/8/8");
+        var from = new Square(1, 4);
+        var to = new Square(0, 4);
+        var promotionType = PieceType.QUEEN;
+
+        //Act
+        board.PromotePiece(from, to, promotionType);
+        var OldLocationPiece = board.BoardArray[0, 3];
+        var NewLocationPiece = board.BoardArray[0, 3];
+
+        //Assert
+        Assert.AreEqual(null, OldLocationPiece);
+        Assert.AreEqual(null, NewLocationPiece);
     }
 
     [TestMethod]
@@ -104,6 +142,32 @@ public class BoardTests
     }
 
     [TestMethod]
+    public void KingInDrawTest_KingInCheck()
+    {
+        //Arrange
+        var board = new Board("8/8/7p/7P/8/r7/8/1K1q4");
+
+        //Act
+        var result = board.KingInDraw(Side.WHITE);
+
+        //Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void KingInDrawTest_PlayerHasMovesLeft()
+    {
+        //Arrange
+        var board = new Board("8/8/8/7P/8/r7/3q4/1K6");
+
+        //Act
+        var result = board.KingInDraw(Side.WHITE);
+
+        //Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
     public void KingIsMatedTest()
     {
         //Arrange
@@ -114,6 +178,32 @@ public class BoardTests
 
         //Assert
         Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public void KingIsMatedTest_KingNotInCheck()
+    {
+        //Arrange
+        var board = new Board("8/8/7p/7P/8/4r3/3q4/1K6");
+
+        //Act
+        var result = board.KingIsMated(Side.WHITE);
+
+        //Assert
+        Assert.IsFalse(result);
+    }
+
+    [TestMethod]
+    public void KingIsMatedTest_KingHasMovesLeft()
+    {
+        //Arrange
+        var board = new Board("8/8/7p/7P/8/8/rr6/1K6");
+
+        //Act
+        var result = board.KingIsMated(Side.WHITE);
+
+        //Assert
+        Assert.IsFalse(result);
     }
 
 }
