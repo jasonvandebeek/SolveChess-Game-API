@@ -9,6 +9,21 @@ public class SquareTests
 {
 
     [TestMethod]
+    public void SquareTest_CreateWithRank3File5()
+    {
+        //Arrange
+        var expectedRank = 3;
+        var expectedFile = 5;
+
+        //Act
+        var square = new Square(3, 5);
+
+        //Assert
+        Assert.AreEqual(expectedRank, square.Rank);
+        Assert.AreEqual(expectedFile, square.File);
+    }
+
+    [TestMethod]
     public void SquareTest_CreateWithNotationD3()
     {
         //Arrange
@@ -75,6 +90,45 @@ public class SquareTests
         {
             //Act
             var result = new Square(1, -2);
+        });
+    }
+
+    [TestMethod]
+    public void SquareTest_InvalidNotationLength_ThrowsException()
+    {
+        //Arrange
+
+        //Assert
+        Assert.ThrowsException<InvalidSquareNotationException>(() =>
+        {
+            //Act
+            var result = new Square("D");
+        });
+    }
+
+    [TestMethod]
+    public void SquareTest_InvalidRankCharType_ThrowsException()
+    {
+        //Arrange
+
+        //Assert
+        Assert.ThrowsException<InvalidSquareNotationException>(() =>
+        {
+            //Act
+            var result = new Square("!2");
+        });
+    }
+
+    [TestMethod]
+    public void SquareTest_OutOfBoundsFileChar_ThrowsException()
+    {
+        //Arrange
+
+        //Assert
+        Assert.ThrowsException<InvalidSquareNotationException>(() =>
+        {
+            //Act
+            var result = new Square("D9");
         });
     }
 

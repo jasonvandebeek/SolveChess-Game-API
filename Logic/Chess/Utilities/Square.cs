@@ -23,8 +23,9 @@ public class Square : ISquare
         char fileChar = char.ToUpper(notation[0]);
         char rankChar = notation[1];
 
-        if (!char.IsLetter(fileChar) || !char.IsDigit(rankChar))
+        if(!char.IsLetter(fileChar) || !char.IsDigit(rankChar) || fileChar < 'A' || fileChar > 'H' || rankChar < '1' || rankChar > '8')
             throw new InvalidSquareNotationException();
+
 
         _file = fileChar - 'A';
         _rank = '8' - rankChar;
