@@ -1,4 +1,5 @@
 ﻿
+
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Pieces;
 using System.ComponentModel.DataAnnotations;

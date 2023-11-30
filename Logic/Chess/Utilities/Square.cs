@@ -13,7 +13,22 @@ public class Square : ISquare
     private readonly int _rank;
     public int Rank { get { return _rank; } }
 
-    public string Notation { get { return $"{(char)('a' + _file)}{(char)('1' + _rank)}"; } }
+    public string Notation { get { return $"{(char)('a' + _file)}{(char)('8' - _rank)}"; } }
+
+    public Square(string notation)
+    {
+        if (notation.Length != 2)
+            throw new InvalidSquareNotationException();
+
+        char fileChar = char.ToUpper(notation[0]);
+        char rankChar = notation[1];
+
+        if (!char.IsLetter(fileChar) || !char.IsDigit(rankChar))
+            throw new InvalidSquareNotationException();
+
+        _file = fileChar - 'A';
+        _rank = '8' - rankChar;
+    }
 
     public Square(int rank, int file)
     {

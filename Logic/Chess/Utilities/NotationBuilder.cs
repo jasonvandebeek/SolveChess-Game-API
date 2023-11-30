@@ -35,7 +35,7 @@ public class NotationBuilder
         {
             _notation.Append('e');
         }
-        else
+        else if(piece.Type != PieceType.PAWN)
         {
             _notation.Append(piece.Notation);
         }
