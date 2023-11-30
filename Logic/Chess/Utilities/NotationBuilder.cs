@@ -18,7 +18,7 @@ public class NotationBuilder
     {
         _notation = new StringBuilder();
 
-        AddPieceType(moveInfo.Piece, moveInfo.TargetPiece);
+        AddPieceType(moveInfo.Piece, moveInfo.TargetPiece, moveInfo.From);
         AddTakes(moveInfo.TargetPiece);
         AddTargetLocation(moveInfo.To);
         AddCastling(moveInfo.Piece, moveInfo.From, moveInfo.To);
@@ -29,15 +29,15 @@ public class NotationBuilder
         Notation = _notation.ToString();
     }
 
-    private void AddPieceType(PieceBase piece, PieceBase? targetPiece)
+    private void AddPieceType(PieceBase piece, PieceBase? targetPiece, Square from)
     {
         if (piece.Type == PieceType.PAWN && targetPiece != null)
         {
-            _notation.Append('e');
+            _notation.Append(from.Notation[0].ToString().ToLower());
         }
         else if(piece.Type != PieceType.PAWN)
         {
-            _notation.Append(piece.Notation);
+            _notation.Append(piece.Notation.ToString().ToUpper());
         }
     }
 
@@ -56,10 +56,17 @@ public class NotationBuilder
     {
         if (piece.Type == PieceType.KING)
         {
-            if ((from.Rank == 0 || from.Rank == 7) && to.File == 1)
+            if ((from.Rank == 0 || from.Rank == 7) && to.File == 2)
+            {
+                _notation.Clear();
                 _notation.Append("O-O-O");
+            }
+                
             else if ((from.Rank == 0 || from.Rank == 7) && to.File == 6)
+            {
+                _notation.Clear();
                 _notation.Append("O-O");
+            }
         }
     }
 
@@ -70,7 +77,7 @@ public class NotationBuilder
             var tempPiece = PieceFactory.BuildPiece(promotion, piece.Side);
 
             _notation.Append('=');
-            _notation.Append(tempPiece.Notation);
+            _notation.Append(tempPiece.Notation.ToString().ToUpper());
         }
     }
 

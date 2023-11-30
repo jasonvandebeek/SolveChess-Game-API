@@ -40,6 +40,7 @@ public class Game
         SideToMove = gameState.SideToMove;
     }
 
+    //TODO: Add castling move
     public MoveResult PlayMove(Square from, Square to, PieceType? promotion)
     {
         PieceBase? piece = board.GetPieceAt(from);
