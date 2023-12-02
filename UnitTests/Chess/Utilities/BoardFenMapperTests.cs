@@ -32,7 +32,6 @@ public class BoardFenMapperTests
         board.PlacePieceAtSquare(new Knight(Side.BLACK), new Square(2, 5));
         board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square(3, 2));
         board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(3, 3));
-
         board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square(3, 4));
         board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(4, 0));
         board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square(4, 5));

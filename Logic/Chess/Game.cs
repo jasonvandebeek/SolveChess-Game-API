@@ -40,10 +40,10 @@ public class Game
     public Move? PlayMove(Square from, Square to, PieceType? promotion)
     {
         PieceBase? piece = board.GetPieceAt(from);
-        if (piece == null || piece.Side != SideToMove || piece.CanMoveToSquare(to, board))
+        if (piece == null || piece.Side != SideToMove || !piece.CanMoveToSquare(to, board))
             return null;
 
-        UpdateEnpassantSquare(piece, to);
+        UpdateEnpassantSquare(piece, from, to);
         UpdateCastlingRights(piece, SideToMove, from);
 
         PieceBase? targetPiece = board.GetPieceAt(to);
@@ -78,9 +78,9 @@ public class Game
 
     private void UpdateHalfMoveClock(PieceBase piece, PieceBase? targetPiece)
     {
-        if (targetPiece == null && piece.Type != PieceType.PAWN)
-            HalfMoveClock += 1;
-        else
+        HalfMoveClock += 1;
+
+        if (targetPiece == null || piece.Type == PieceType.PAWN)
             HalfMoveClock = 0;
     }
 
@@ -109,25 +109,16 @@ public class Game
 
     private void MovePiece(PieceBase piece, Square from, Square to, PieceType? promotion)
     {
-        if (piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && to.Rank == 0 || piece.Side == Side.BLACK && to.Rank == 7))
+        if (MoveIsPromotion(piece, to))
         {
-            if (promotion == PieceType.PAWN || promotion == PieceType.KING)
-                throw new PromotionException("Invalid promotion piece!");
+            if (promotion == null)
+                throw new PromotionException("Promotion expected!");
 
-            board.PromotePiece(from, to, promotion ?? throw new PromotionException("Invalid promotion type!"));
+            PromotePiece(from, to, (PieceType)promotion);
         }
-        else if (piece.Type == PieceType.KING)
+        else if (IsCastlingMove(piece, from, to))
         {
-            if ((from.Rank == 0 || from.Rank == 7) && to.File == 2)
-            {
-                board.MovePiece(from, to);
-                board.MovePiece(new Square(from.Rank, 0), new Square(to.Rank, to.File + 1));
-            }
-            else if ((from.Rank == 0 || from.Rank == 7) && to.File == 6)
-            {
-                board.MovePiece(from, to);
-                board.MovePiece(new Square(from.Rank, 7), new Square(to.Rank, to.File - 1));
-            }
+            MakeCastlingMove(from, to);
         }
         else
         {
@@ -136,15 +127,57 @@ public class Game
             
     }
 
-    private void UpdateEnpassantSquare(PieceBase piece, Square to)
+    private void MakeCastlingMove(Square from, Square to)
     {
-        if (piece.Type == PieceType.PAWN)
+        if (to.File == 2)
         {
-            var moveDirection = piece.Side == Side.WHITE ? -1 : 1;
-            var pos = board.GetSquareOfPiece(piece);
-            if (piece.Side == Side.WHITE && pos.Rank == 6 || piece.Side == Side.BLACK && pos.Rank == 1)
-                board.EnpassantSquare = new Square(to.Rank, to.File + moveDirection);
+            board.MovePiece(from, to);
+            board.MovePiece(new Square(from.Rank, 0), new Square(to.Rank, 3));
         }
+        else if (to.File == 6)
+        {
+            board.MovePiece(from, to);
+            board.MovePiece(new Square(from.Rank, 7), new Square(to.Rank, 5));
+        }
+    }
+
+    private bool IsCastlingMove(PieceBase piece, Square from, Square to)
+    {
+        var isKing = piece.Type == PieceType.KING;
+        var isOnBackRank = from.Rank == 0 || from.Rank == 7;
+        var isToCastlingFile = to.File == 2 || to.File == 6;
+
+        return isKing && isOnBackRank && isToCastlingFile;
+    }
+
+    private void PromotePiece(Square from, Square to, PieceType promotion)
+    {
+        if (PromotionTypeIsInvalid(promotion))
+            throw new PromotionException("Invalid promotion piece!");
+
+        board.PromotePiece(from, to, promotion);
+    }
+
+    private bool MoveIsPromotion(PieceBase piece, Square to)
+    {
+        return piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && to.Rank == 0 || piece.Side == Side.BLACK && to.Rank == 7);
+    }
+
+    private bool PromotionTypeIsInvalid(PieceType? promotion)
+    {
+        return (promotion != PieceType.PAWN && promotion != PieceType.KING);
+    }
+
+    private void UpdateEnpassantSquare(PieceBase piece, Square from, Square to)
+    {
+        var oppositeMoveDirection = piece.Side == Side.WHITE ? 1 : -1;
+        if (PawnDoesStartJump(piece, from, to))
+            board.EnpassantSquare = new Square(to.Rank + oppositeMoveDirection, to.File);
+    }
+
+    private bool PawnDoesStartJump(PieceBase piece, Square from, Square to)
+    {
+        return piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && from.Rank == 6 || piece.Side == Side.BLACK && from.Rank == 1) && Math.Abs(from.Rank - to.Rank) == 2;
     }
 
     private void UpdateCastlingRights(PieceBase piece, Side side, Square from)
