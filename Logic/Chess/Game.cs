@@ -152,7 +152,7 @@ public class Game
 
     private void PromotePiece(Square from, Square to, PieceType promotion)
     {
-        if (PromotionTypeIsInvalid(promotion))
+        if (!PromotionTypeIsValid(promotion))
             throw new PromotionException("Invalid promotion piece!");
 
         board.PromotePiece(from, to, promotion);
@@ -163,7 +163,7 @@ public class Game
         return piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && to.Rank == 0 || piece.Side == Side.BLACK && to.Rank == 7);
     }
 
-    private static bool PromotionTypeIsInvalid(PieceType? promotion)
+    private static bool PromotionTypeIsValid(PieceType? promotion)
     {
         return (promotion != PieceType.PAWN && promotion != PieceType.KING);
     }
