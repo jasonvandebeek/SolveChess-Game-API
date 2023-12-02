@@ -47,7 +47,7 @@ public class Square : ISquare
 
         Square other = (Square)obj;
 
-        return other.GetHashCode() == GetHashCode();
+        return other.Rank == Rank && other.File == File;
     }
 
     public override int GetHashCode()

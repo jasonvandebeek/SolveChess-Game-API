@@ -2,11 +2,9 @@
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
-using SolveChess.Logic.Chess.Utilities;
-using SolveChess.Logic.Chess;
 using System.Text;
 
-namespace Logic.Chess.Utilities;
+namespace SolveChess.Logic.Chess.Utilities;
 
 public class NotationBuilder
 {
@@ -61,7 +59,6 @@ public class NotationBuilder
                 _notation.Clear();
                 _notation.Append("O-O-O");
             }
-                
             else if ((from.Rank == 0 || from.Rank == 7) && to.File == 6)
             {
                 _notation.Clear();

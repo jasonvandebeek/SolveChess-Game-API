@@ -1,7 +1,5 @@
 ﻿
-using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
-using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
 
 namespace SolveChess.Logic.Chess.Pieces;
@@ -11,9 +9,7 @@ public class Bishop : PieceBase
 
     public override PieceType Type { get; } = PieceType.BISHOP;
 
-    protected override char _notation { get; } = 'b';
-
-    public Bishop(Side side) : base(side)
+    public Bishop(Side side) : base(side, 'b')
     {
     }
 

@@ -12,7 +12,22 @@ public class RookTests
     {
         //Arrange
         var startingSquare = new Square(3, 3);
-        var expected = new List<Square>() { new Square(4, 3), new Square(5, 3), new Square(6, 3), new Square(7, 3), new Square(2, 3), new Square(1, 3), new Square(0, 3), new Square(3, 4), new Square(3, 5), new Square(3, 6), new Square(3, 7), new Square(3, 2), new Square(3, 1), new Square(3, 0) };
+        var expected = new List<Square>() { 
+            new Square(4, 3), 
+            new Square(5, 3), 
+            new Square(6, 3), 
+            new Square(7, 3), 
+            new Square(2, 3), 
+            new Square(1, 3), 
+            new Square(0, 3), 
+            new Square(3, 4), 
+            new Square(3, 5), 
+            new Square(3, 6), 
+            new Square(3, 7), 
+            new Square(3, 2),
+            new Square(3, 1), 
+            new Square(3, 0) 
+        };
 
         var board = new Board("8/8/8/3R4/8/8/8/8");
         var piece = board.GetPieceAt(startingSquare);

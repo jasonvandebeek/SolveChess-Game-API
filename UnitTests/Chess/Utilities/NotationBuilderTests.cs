@@ -1,10 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Logic.Chess.Utilities;
 using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
 
-namespace Logic.Chess.Utilities.Tests;
+namespace SolveChess.Logic.Chess.Utilities.Tests;
 
 [TestClass]
 public class NotationBuilderTests

@@ -7,8 +7,6 @@ using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
 using SolveChess.Logic.Models;
 using SolveChess.Logic.Interfaces;
-using SolveChess.Logic.ResultObjects;
-
 namespace SolveChess.Logic.Service;
 
 public class ChessService : IChessService
@@ -29,36 +27,22 @@ public class ChessService : IChessService
         return UserHasAccessToGame(gameInfoModel, userId);
     }
 
-    public async Task<MoveResult> PlayMoveOnGame(string gameId, string userId, ISquare from, ISquare to, string? promotion)
+    public async Task<Move?> PlayMoveOnGame(string gameId, string userId, ISquare from, ISquare to, string? promotion)
     { 
-        try
-        {
-            GameInfoModel gameInfoModel = await GetGameWithId(gameId);
-            if (!UserHasAccessToGame(gameInfoModel, userId)) 
-                return new MoveResult(StatusCode.FAILURE, "User has no access to this game!");
+        GameInfoModel gameInfoModel = await GetGameWithId(gameId);
+        if (!UserHasAccessToGame(gameInfoModel, userId) || !IsUserToMove(gameInfoModel, userId))
+            return null;
 
-            if (IsUserToMove(gameInfoModel, userId))
-                return new MoveResult(StatusCode.FAILURE, "It's not the users turn!");
+        PieceType? promotionType = promotion != null ? (PieceType)Enum.Parse(typeof(PieceType), promotion) : null;
+        Move? move = gameInfoModel.Game.PlayMove((Square)from, (Square)to, promotionType);
+        if (move == null)
+            return move;
 
-            PieceType? promotionType = promotion != null ? (PieceType)Enum.Parse(typeof(PieceType), promotion) : null;
-            MoveResult moveResult = gameInfoModel.Game.PlayMove((Square)from, (Square)to, promotionType);
-            if (!moveResult.Succeeded)
-                return moveResult;
+        await _gameDal.UpdateGame(gameId, gameInfoModel.Game, move);
 
-            if (moveResult.Move == null)
-                return new MoveResult(StatusCode.FAILURE, "There was an unexpected problem when playing your move!");
+        await _clientCommunicationService.SendMoveToGame(gameId, move);
 
-            await _gameDal.UpdateGame(gameId, gameInfoModel.Game, moveResult.Move);
-
-            await _clientCommunicationService.SendMoveToGame(gameId, moveResult.Move);
-
-            return moveResult;
-        }
-        catch(Exception exception)
-        {
-            return new MoveResult(StatusCode.EXCEPTION, exception);
-        }
-        
+        return move;
     }
 
     public async Task<IEnumerable<Move>> GetPlayedMovesForGame(string gameId)

@@ -1,7 +1,5 @@
 ﻿
-using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
-using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
 
 namespace SolveChess.Logic.Chess.Pieces;
@@ -11,15 +9,57 @@ public class King : PieceBase
 
     public override PieceType Type { get; } = PieceType.KING;
 
-    protected override char _notation { get; } = 'k';
-
-    public King(Side side) : base(side)
+    public King(Side side) : base(side, 'k')
     {
     }
 
     public override IEnumerable<Square> GetPossibleMoves(Board board)
     {
-        return FilterOutIllegalMoves(KingMoves(board), board);
+        var moves = KingMoves(board).Concat(CastlingMoves(board));
+
+        return FilterOutIllegalMoves(moves, board);
+    }
+
+    private IEnumerable<Square> CastlingMoves(Board board)
+    {
+        if (Side == Side.WHITE)
+        {
+            return WhiteSideCastlingMoves(board);
+        }
+        else
+        {
+            return BlackSideCastlingMoves(board);
+        }
+    }
+
+    private IEnumerable<Square> WhiteSideCastlingMoves(Board board)
+    {
+        if (board.CastlingRightWhiteKingSide && KingSideClear(board))
+            yield return new Square(7, 6);
+
+        if (board.CastlingRightWhiteQueenSide && QueenSideClear(board))
+            yield return new Square(7, 2);
+    }
+
+    private IEnumerable<Square> BlackSideCastlingMoves(Board board)
+    {
+        if (board.CastlingRightBlackKingSide && KingSideClear(board))
+            yield return new Square(0, 6);
+
+        if (board.CastlingRightBlackQueenSide && QueenSideClear(board))
+            yield return new Square(0, 2);
+    }
+
+    private bool QueenSideClear(Board board)
+    {
+        var moves = TraceMoves(board, 0, -1);
+        return moves.Count() == 3;
+    }
+
+    private bool KingSideClear(Board board)
+    {
+        var moves = TraceMoves(board, 0, 1);
+        return moves.Count() == 2;
     }
 
     public bool IsChecked(Board board) 

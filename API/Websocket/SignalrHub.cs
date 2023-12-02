@@ -16,9 +16,4 @@ public class SignalrHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
     }
 
-    public async Task SendMove(string gameId, MoveDataDto move)
-    {
-        await Clients.Group(gameId).SendAsync("RecieveMove", move);
-    }
-
 }

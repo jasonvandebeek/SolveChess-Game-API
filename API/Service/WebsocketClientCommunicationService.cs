@@ -17,8 +17,6 @@ public class WebsocketClientCommunicationService : IClientCommunicationService
 
     public async Task SendMoveToGame(string gameId, Move move)
     {
-        //TODO: Make move model
-
         await _hubContext.Clients.Group(gameId).SendAsync("ReceiveMove", move);
     }
 

@@ -1,13 +1,10 @@
 ﻿
-using Logic.Chess.Utilities;
 using SolveChess.Logic.Attributes;
 using SolveChess.Logic.Chess.Attributes;
-using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.Models;
 using SolveChess.Logic.Exceptions;
-using SolveChess.Logic.ResultObjects;
 
 namespace SolveChess.Logic.Chess;
 
@@ -40,18 +37,11 @@ public class Game
         SideToMove = gameState.SideToMove;
     }
 
-    //TODO: Add castling move
-    public MoveResult PlayMove(Square from, Square to, PieceType? promotion)
+    public Move? PlayMove(Square from, Square to, PieceType? promotion)
     {
         PieceBase? piece = board.GetPieceAt(from);
-        if (piece == null)
-            return new MoveResult(StatusCode.FAILURE, "No piece found at that square!");
-
-        if (piece.Side != SideToMove)
-            return new MoveResult(StatusCode.FAILURE, "User can't move pieces of that side!");
-
-        if (piece.CanMoveToSquare(to, board))
-            return new MoveResult(StatusCode.FAILURE, "Invalid move!");
+        if (piece == null || piece.Side != SideToMove || piece.CanMoveToSquare(to, board))
+            return null;
 
         UpdateEnpassantSquare(piece, to);
         UpdateCastlingRights(piece, SideToMove, from);
@@ -83,9 +73,7 @@ public class Game
 
         string moveNotation = new NotationBuilder(moveInfo).Notation;
 
-        var move = new Move(fullMoveNumber, piece.Side, moveNotation);
-
-        return new MoveResult(StatusCode.SUCCESS, move);
+        return new Move(fullMoveNumber, piece.Side, moveNotation);
     }
 
     private void UpdateHalfMoveClock(PieceBase piece, PieceBase? targetPiece)
@@ -128,8 +116,24 @@ public class Game
 
             board.PromotePiece(from, to, promotion ?? throw new PromotionException("Invalid promotion type!"));
         }
+        else if (piece.Type == PieceType.KING)
+        {
+            if ((from.Rank == 0 || from.Rank == 7) && to.File == 2)
+            {
+                board.MovePiece(from, to);
+                board.MovePiece(new Square(from.Rank, 0), new Square(to.Rank, to.File + 1));
+            }
+            else if ((from.Rank == 0 || from.Rank == 7) && to.File == 6)
+            {
+                board.MovePiece(from, to);
+                board.MovePiece(new Square(from.Rank, 7), new Square(to.Rank, to.File - 1));
+            }
+        }
         else
+        {
             board.MovePiece(from, to);
+        }
+            
     }
 
     private void UpdateEnpassantSquare(PieceBase piece, Square to)

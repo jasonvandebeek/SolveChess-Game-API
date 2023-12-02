@@ -5,7 +5,7 @@ using SolveChess.API.Models;
 using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Models;
 using SolveChess.Logic.Interfaces;
-using SolveChess.Logic.ResultObjects;
+using SolveChess.Logic.Chess.Utilities;
 
 namespace SolveChess.API.Controllers;
 
@@ -29,21 +29,17 @@ public class GameController : Controller
         if (userId == null)
             return Unauthorized();
 
-        MoveResult moveResult = await _chessService.PlayMoveOnGame(gameId, userId, moveDto.From, moveDto.To, moveDto.Promotion);
-        if (!moveResult.Succeeded)
-        {
-            if (moveResult.Exception != null)
-                return StatusCode(500, moveResult.Exception.Message);
+        Move? move = await _chessService.PlayMoveOnGame(gameId, userId, moveDto.From, moveDto.To, moveDto.Promotion);
+        if(move == null)
+            return BadRequest();
 
-            return BadRequest(moveResult.Message);
-        }
 
         return Ok();
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> CreateGame([FromBody] GameCreationDto gameCreationDto) //Add creation model
+    public async Task<IActionResult> CreateGame([FromBody] GameCreationDto gameCreationDto)
     {
         string? userId = GetUserIdFromCookies();
         if (userId == null)
@@ -74,6 +70,14 @@ public class GameController : Controller
         };
 
         return Ok(gameDto);
+    }
+
+    [HttpGet("{gameId}/moves")]
+    public async Task<IActionResult> GetMoves(string gameId)
+    {
+        IEnumerable<Move> moves = await _chessService.GetPlayedMovesForGame(gameId);
+
+        return Ok(moves);
     }
 
 
