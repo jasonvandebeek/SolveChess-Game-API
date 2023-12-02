@@ -80,7 +80,7 @@ public class Game
     {
         HalfMoveClock += 1;
 
-        if (targetPiece == null || piece.Type == PieceType.PAWN)
+        if (targetPiece != null || piece.Type == PieceType.PAWN)
             HalfMoveClock = 0;
     }
 
@@ -141,7 +141,7 @@ public class Game
         }
     }
 
-    private bool IsCastlingMove(PieceBase piece, Square from, Square to)
+    private static bool IsCastlingMove(PieceBase piece, Square from, Square to)
     {
         var isKing = piece.Type == PieceType.KING;
         var isOnBackRank = from.Rank == 0 || from.Rank == 7;
@@ -158,12 +158,12 @@ public class Game
         board.PromotePiece(from, to, promotion);
     }
 
-    private bool MoveIsPromotion(PieceBase piece, Square to)
+    private static bool MoveIsPromotion(PieceBase piece, Square to)
     {
         return piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && to.Rank == 0 || piece.Side == Side.BLACK && to.Rank == 7);
     }
 
-    private bool PromotionTypeIsInvalid(PieceType? promotion)
+    private static bool PromotionTypeIsInvalid(PieceType? promotion)
     {
         return (promotion != PieceType.PAWN && promotion != PieceType.KING);
     }
@@ -175,7 +175,7 @@ public class Game
             board.EnpassantSquare = new Square(to.Rank + oppositeMoveDirection, to.File);
     }
 
-    private bool PawnDoesStartJump(PieceBase piece, Square from, Square to)
+    private static bool PawnDoesStartJump(PieceBase piece, Square from, Square to)
     {
         return piece.Type == PieceType.PAWN && (piece.Side == Side.WHITE && from.Rank == 6 || piece.Side == Side.BLACK && from.Rank == 1) && Math.Abs(from.Rank - to.Rank) == 2;
     }
@@ -206,16 +206,16 @@ public class Game
     {
         if(side == Side.BLACK)
         {
-            if (from.Equals(new Square(7, 0)))
-                board.CastlingRightWhiteQueenSide = false;
-            else if (from.Equals(new Square(7, 7)))
-                board.CastlingRightWhiteKingSide = false;
+            if (from.Equals(new Square(0, 0)))
+                board.CastlingRightBlackQueenSide = false;
+            else if (from.Equals(new Square(0, 7)))
+                board.CastlingRightBlackKingSide = false;
         }
         else
         {
-            if (from.Equals(new Square(0, 0)))
+            if (from.Equals(new Square(7, 0)))
                 board.CastlingRightWhiteQueenSide = false;
-            else if (from.Equals(new Square(0, 7)))
+            else if (from.Equals(new Square(7, 7)))
                 board.CastlingRightWhiteKingSide = false;
         }
     }
