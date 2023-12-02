@@ -67,6 +67,34 @@ public class KingTests
     }
 
     [TestMethod]
+    public void GetPossibleMovesTest_BlackKingFromE8CanCastleBothSides()
+    {
+        //Arrange
+        var expected = new List<Square>()
+        {
+            new Square("C8"),
+            new Square("D8"),
+            new Square("F8"),
+            new Square("G8"),
+            new Square("D7"),
+            new Square("E7"),
+            new Square("F7")
+        };
+
+        var board = new Board("r3k2r/8/8/8/8/8/8/8", true, true);
+        var piece = new King(Side.BLACK);
+        var square = new Square("E8");
+
+        board.PlacePieceAtSquare(piece, square);
+
+        //Act
+        var result = piece.GetPossibleMoves(board).ToList();
+
+        //Assert
+        CollectionAssert.AreEquivalent(expected, result);
+    }
+
+    [TestMethod]
     public void GetPossibleMovesTest_WhiteKingFromE1CantMoveIntoOpposingKingOnE3()
     {
         //Arrange

@@ -24,7 +24,7 @@ public static class PieceFactory
         };
     }
 
-    public static PieceBase BuildPiece(PieceType? type, Side side)
+    public static PieceBase BuildPiece(PieceType type, Side side)
     {
         return type switch
         {

@@ -10,43 +10,44 @@ namespace SolveChess.Logic.Chess.Utilities.Tests;
 public class BoardFenMapperTests
 {
 
-    private PieceBase?[,] board = null!;
+    private Board board = null!;
     private string fen = null!;
 
     [TestInitialize]
     public void TestInitialize()
     {
-        board = new PieceBase[8, 8];
+        board = new Board();
 
-        board[0, 0] = PieceFactory.BuildPiece(PieceType.ROOK, Side.BLACK);
-        board[0, 3] = PieceFactory.BuildPiece(PieceType.QUEEN, Side.BLACK);
-        board[0, 5] = PieceFactory.BuildPiece(PieceType.ROOK, Side.BLACK);
-        board[1, 0] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[1, 2] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[1, 4] = PieceFactory.BuildPiece(PieceType.KING, Side.BLACK);
-        board[1, 5] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[1, 6] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[1, 7] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[2, 1] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[2, 4] = PieceFactory.BuildPiece(PieceType.BISHOP, Side.BLACK);
-        board[2, 5] = PieceFactory.BuildPiece(PieceType.KNIGHT, Side.BLACK);
-        board[3, 2] = PieceFactory.BuildPiece(PieceType.BISHOP, Side.BLACK);
-        board[3, 3] = PieceFactory.BuildPiece(PieceType.PAWN, Side.BLACK);
-        board[3, 4] = PieceFactory.BuildPiece(PieceType.KNIGHT, Side.WHITE);
-        board[4, 0] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[4, 5] = PieceFactory.BuildPiece(PieceType.BISHOP, Side.WHITE);
-        board[5, 0] = PieceFactory.BuildPiece(PieceType.ROOK, Side.WHITE);
-        board[5, 2] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[5, 3] = PieceFactory.BuildPiece(PieceType.QUEEN, Side.WHITE);
-        board[6, 1] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[6, 3] = PieceFactory.BuildPiece(PieceType.KING, Side.WHITE);
-        board[6, 4] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[6, 5] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[6, 6] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[6, 7] = PieceFactory.BuildPiece(PieceType.PAWN, Side.WHITE);
-        board[7, 1] = PieceFactory.BuildPiece(PieceType.KNIGHT, Side.WHITE);
-        board[7, 5] = PieceFactory.BuildPiece(PieceType.BISHOP, Side.WHITE);
-        board[7, 7] = PieceFactory.BuildPiece(PieceType.ROOK, Side.WHITE);
+        board.PlacePieceAtSquare(new Rook(Side.BLACK), new Square(0, 0));
+        board.PlacePieceAtSquare(new Queen(Side.BLACK), new Square(0, 3));
+        board.PlacePieceAtSquare(new Rook(Side.BLACK), new Square(0, 5));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 0));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 2));
+        board.PlacePieceAtSquare(new King(Side.BLACK), new Square(1, 4));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 5));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 6));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 7));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(2, 1));
+        board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square(2, 4));
+        board.PlacePieceAtSquare(new Knight(Side.BLACK), new Square(2, 5));
+        board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square(3, 2));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(3, 3));
+
+        board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square(3, 4));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(4, 0));
+        board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square(4, 5));
+        board.PlacePieceAtSquare(new Rook(Side.WHITE), new Square(5, 0));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(5, 2));
+        board.PlacePieceAtSquare(new Queen(Side.WHITE), new Square(5, 3));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 1));
+        board.PlacePieceAtSquare(new King(Side.WHITE), new Square(6, 3));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 4));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 5));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 6));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 7));
+        board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square(7, 1));
+        board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square(7, 5));
+        board.PlacePieceAtSquare(new Rook(Side.WHITE), new Square(7, 7));
 
         fen = "r2q1r2/p1p1kppp/1p2bn2/2bpN3/P4B2/R1PQ4/1P1KPPPP/1N3B1R";
     }
@@ -70,13 +71,14 @@ public class BoardFenMapperTests
 
         //Act
         var result = BoardFenMapper.GetBoardStateFromFen(fen);
+        var boardArray = board.BoardArray;
 
         //Assert
-        for(int rank = 0; rank < board.GetLength(0); rank++) 
+        for(int rank = 0; rank < boardArray.GetLength(0); rank++) 
         { 
-            for(int file = 0; file < board.GetLength(1); file++)
+            for(int file = 0; file < boardArray.GetLength(1); file++)
             {
-                var expectedPiece = board[rank, file];
+                var expectedPiece = boardArray[rank, file];
                 var actualPiece = result[rank, file];
 
                 if (expectedPiece?.Type != actualPiece?.Type || expectedPiece?.Side != actualPiece?.Side)

@@ -32,7 +32,7 @@ public class Board
 
     public Square? EnpassantSquare { get; set; }
 
-    public string Fen { get { return BoardFenMapper.GetFenFromBoard(_boardArray); } }
+    public string Fen { get { return BoardFenMapper.GetFenFromBoard(this); } }
 
     public Board(bool castlingRightBlackKingSide = false, bool castlingRightBlackQueenSide = false, bool castlingRightWhiteKingSide = false, bool castlingRightWhiteQueenSide = false, Square? enpassantSquare = null)
     {
