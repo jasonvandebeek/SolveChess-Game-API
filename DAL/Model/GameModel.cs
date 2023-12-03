@@ -1,7 +1,6 @@
 ﻿
 using SolveChess.Logic.Chess.Attributes;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SolveChess.DAL.Model;
 
@@ -12,9 +11,9 @@ public class GameModel
     public string Id { get; set; } = null!;
 
     [Required]
-    public string WhitePlayerId { get; set; } = null!;
+    public string WhiteSideUserId { get; set; } = null!;
     [Required]
-    public string BlackPlayerId { get; set; } = null!;
+    public string BlackSideUserId { get; set; } = null!;
 
     public GameState State { get; set; }
 

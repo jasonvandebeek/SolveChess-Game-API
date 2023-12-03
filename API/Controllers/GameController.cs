@@ -33,7 +33,6 @@ public class GameController : Controller
         if(move == null)
             return BadRequest();
 
-
         return Ok();
     }
 
@@ -57,8 +56,8 @@ public class GameController : Controller
         var gameDto = new GameDto()
         {
             Id = gameInfo.Id,
-            WhitePlayerId = gameInfo.WhitePlayerId,
-            BlackPlayerId = gameInfo.BlackPlayerId,
+            WhitePlayerId = gameInfo.WhiteSideUserId,
+            BlackPlayerId = gameInfo.BlackSideUserId,
             State = gameInfo.Game.State.ToString(),
             Fen = gameInfo.Game.Fen,
             SideToMove = gameInfo.Game.SideToMove.ToString(),

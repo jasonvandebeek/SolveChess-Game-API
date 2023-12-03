@@ -1,5 +1,4 @@
 ﻿
-using SolveChess.Logic.Attributes;
 using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Interfaces;
@@ -23,14 +22,17 @@ public class ChessService : IChessService
 
     public async Task<bool> UserHasAccessToGame(string gameId, string userId)
     {
-        GameInfoModel gameInfoModel = await GetGameWithId(gameId);
+        GameInfoModel? gameInfoModel = await GetGameWithId(gameId);
+        if(gameInfoModel == null)
+            return false;
+
         return UserHasAccessToGame(gameInfoModel, userId);
     }
 
     public async Task<Move?> PlayMoveOnGame(string gameId, string userId, ISquare from, ISquare to, string? promotion)
     { 
-        GameInfoModel gameInfoModel = await GetGameWithId(gameId);
-        if (!UserHasAccessToGame(gameInfoModel, userId) || !IsUserToMove(gameInfoModel, userId))
+        GameInfoModel? gameInfoModel = await GetGameWithId(gameId);
+        if (gameInfoModel == null || !UserHasAccessToGame(gameInfoModel, userId) || !IsUserToMove(gameInfoModel, userId))
             return null;
 
         PieceType? promotionType = promotion != null ? (PieceType)Enum.Parse(typeof(PieceType), promotion) : null;
@@ -38,37 +40,86 @@ public class ChessService : IChessService
         if (move == null)
             return move;
 
-        await _gameDal.UpdateGame(gameId, gameInfoModel.Game, move);
+        await _gameDal.UpdateGameAndCreateMove(gameId, gameInfoModel.Game, move);
 
         await _clientCommunicationService.SendMoveToGame(gameId, move);
 
         return move;
     }
 
-    public async Task<IEnumerable<Move>> GetPlayedMovesForGame(string gameId)
+    public async Task<IEnumerable<Move>?> GetPlayedMovesForGame(string gameId)
     {
-        throw new NotImplementedException();
+        return await _gameDal.GetMovesForGame(gameId);
     }
 
     public async Task CreateNewGame(string playerOneUserId, string playerTwoUserId, string? WhiteSideUserId)
     {
-        throw new NotImplementedException();
+        var id = GetNewGameId();
+        var game = GetNewGame();
+
+        var whiteSideUserId = WhiteSideUserId ?? GetWhiteSideUserId(playerOneUserId, playerTwoUserId);
+        var blackSideUserId = GetBlackSideUserId(playerOneUserId, playerTwoUserId, whiteSideUserId);
+
+        var gameInfoModel = new GameInfoModel()
+        {
+            Id = id,
+            WhiteSideUserId = whiteSideUserId,
+            BlackSideUserId = blackSideUserId,
+            Game = game,
+        };
+
+        await _gameDal.CreateGame(gameInfoModel);
     }
 
-    public async Task<GameInfoModel> GetGameWithId(string gameId)
+    public async Task<GameInfoModel?> GetGameWithId(string gameId)
     {
         return await _gameDal.GetGameWithId(gameId);
     }
 
 
+
+    private static string GetNewGameId()
+    {
+        return Guid.NewGuid().ToString();
+    }
+
+    private static Game GetNewGame()
+    {
+        var gameStateModel = new GameStateModel()
+        {
+            State = GameState.IN_PROGRESS,
+            Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+            CastlingRightBlackKingSide = true,
+            CastlingRightBlackQueenSide = true,
+            CastlingRightWhiteKingSide = true,
+            CastlingRightWhiteQueenSide = true,
+            FullMoveNumber = 1,
+            HalfMoveClock = 0,
+            SideToMove = Side.WHITE
+        };
+
+        return new Game(gameStateModel);
+    }
+
+    private static string GetWhiteSideUserId(string playerOneUserId, string playerTwoUserId)
+    {
+        var random = new Random();
+        return random.Next(2) == 0 ? playerOneUserId : playerTwoUserId;
+    }
+
+    private static string GetBlackSideUserId(string playerOneUserId, string playerTwoUserId, string WhiteSideUserId)
+    {
+        return WhiteSideUserId == playerOneUserId ? playerTwoUserId : playerOneUserId;
+    }
+
     private static bool UserHasAccessToGame(GameInfoModel gameInfoModel, string userId)
     {
-        return gameInfoModel.BlackPlayerId != userId || gameInfoModel.WhitePlayerId != userId;
+        return gameInfoModel.BlackSideUserId != userId || gameInfoModel.WhiteSideUserId != userId;
     }
 
     private static bool IsUserToMove(GameInfoModel gameInfoModel, string userId)
     {
-        return (gameInfoModel.Game.SideToMove != Side.BLACK && gameInfoModel.BlackPlayerId == userId) || (gameInfoModel.Game.SideToMove != Side.WHITE && gameInfoModel.WhitePlayerId == userId);
+        return (gameInfoModel.Game.SideToMove != Side.BLACK && gameInfoModel.BlackSideUserId == userId) || (gameInfoModel.Game.SideToMove != Side.WHITE && gameInfoModel.WhiteSideUserId == userId);
     }
 
 }

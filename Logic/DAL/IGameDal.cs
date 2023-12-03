@@ -8,9 +8,10 @@ namespace SolveChess.Logic.DAL;
 public interface IGameDal
 {
 
-    Task<GameInfoModel> GetGameWithId(string gameId);
-    Task<IEnumerable<Move>> GetMovesForGame(string gameId);
+    Task<GameInfoModel?> GetGameWithId(string gameId);
+    Task<IEnumerable<Move>?> GetMovesForGame(string gameId);
 
-    Task UpdateGame(string gameId, Game game, Move move);
+    Task UpdateGameAndCreateMove(string gameId, Game game, Move move);
+    Task CreateGame(GameInfoModel gameInfo);
 
 }

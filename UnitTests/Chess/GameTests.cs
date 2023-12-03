@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SolveChess.Logic.Chess;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.Exceptions;
@@ -24,7 +23,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -132,7 +130,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -162,7 +159,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -192,7 +188,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -222,7 +217,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -252,7 +246,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -296,11 +289,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/8/4n3/8/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -327,11 +315,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/8/4n3/6B1/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 10,
             SideToMove = Side.BLACK
@@ -358,11 +341,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/8/4n3/6B1/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -409,11 +387,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/4P3/8/8/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -442,11 +415,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/8/8/8/8/8/3p4/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -473,10 +441,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/4P3/8/8/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
             EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
@@ -507,10 +471,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/4P3/8/8/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
             EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
@@ -541,11 +501,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/4P3/8/8/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -580,7 +535,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -612,7 +566,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -642,7 +595,6 @@ public class GameTests
             CastlingRightBlackQueenSide = true,
             CastlingRightWhiteKingSide = true,
             CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -688,11 +640,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "8/8/8/8/2q5/8/1r6/4K3",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.BLACK
@@ -720,11 +667,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "1k6/8/8/2B5/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE
@@ -752,11 +694,6 @@ public class GameTests
         {
             State = GameState.IN_PROGRESS,
             Fen = "k7/7R/8/2Q5/8/8/8/8",
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquare = null,
             FullMoveNumber = 1,
             HalfMoveClock = 0,
             SideToMove = Side.WHITE

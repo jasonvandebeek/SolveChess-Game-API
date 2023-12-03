@@ -11,9 +11,9 @@ public class GameInfoModel
     public string Id { get; set; } = null!;
 
     [Required]
-    public string WhitePlayerId { get; set; } = null!;
+    public string WhiteSideUserId { get; set; } = null!;
     [Required]
-    public string BlackPlayerId { get; set; } = null!;
+    public string BlackSideUserId { get; set; } = null!;
 
     [Required]
     public Game Game { get; set; } = null!;

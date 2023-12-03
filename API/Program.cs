@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SolveChess.API.Exceptions;
+using SolveChess.API.Service;
 using SolveChess.API.Websocket;
 using SolveChess.DAL;
 using SolveChess.DAL.Model;
@@ -32,6 +33,8 @@ builder.Services.AddScoped<IGameDal, GameDal>(provider =>
 
     return new GameDal(dbContextOptions);
 });
+
+builder.Services.AddScoped<IClientCommunicationService, WebsocketClientCommunicationService>();
 
 builder.Services.AddScoped<IChessService, ChessService>();
 
