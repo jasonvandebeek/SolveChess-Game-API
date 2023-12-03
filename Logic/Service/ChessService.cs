@@ -101,9 +101,9 @@ public class ChessService : IChessService
         return new Game(gameStateModel);
     }
 
+    private static readonly Random random = new();
     private static string GetWhiteSideUserId(string playerOneUserId, string playerTwoUserId)
     {
-        var random = new Random();
         return random.Next(2) == 0 ? playerOneUserId : playerTwoUserId;
     }
 

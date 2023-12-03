@@ -1,5 +1,4 @@
 ﻿
-using SolveChess.Logic.Attributes;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
@@ -224,18 +223,18 @@ public class Game
     {
         var opposingSide = SideToMove == Side.WHITE ? Side.BLACK : Side.WHITE;
 
-        if(board.KingInCheck(opposingSide))
+        if (!board.KingInCheck(opposingSide))
+            return;
+
+        if (opposingSide == Side.BLACK)
         {
-            if(opposingSide == Side.BLACK)
-            {
-                board.CastlingRightBlackKingSide = false;
-                board.CastlingRightBlackQueenSide = false;
-            }
-            else
-            {
-                board.CastlingRightWhiteKingSide = false;
-                board.CastlingRightWhiteQueenSide = false;
-            }
+            board.CastlingRightBlackKingSide = false;
+            board.CastlingRightBlackQueenSide = false;
+        }
+        else
+        {
+            board.CastlingRightWhiteKingSide = false;
+            board.CastlingRightWhiteQueenSide = false;
         }
     }
 

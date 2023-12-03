@@ -51,7 +51,9 @@ public class GameController : Controller
     [HttpGet("{gameId}")]
     public async Task<IActionResult> GetGame(string gameId)
     {
-        GameInfoModel gameInfo = await _chessService.GetGameWithId(gameId);
+        GameInfoModel? gameInfo = await _chessService.GetGameWithId(gameId);
+        if(gameInfo == null)
+            return BadRequest();
 
         var gameDto = new GameDto()
         {
@@ -74,7 +76,9 @@ public class GameController : Controller
     [HttpGet("{gameId}/moves")]
     public async Task<IActionResult> GetMoves(string gameId)
     {
-        IEnumerable<Move> moves = await _chessService.GetPlayedMovesForGame(gameId);
+        IEnumerable<Move>? moves = await _chessService.GetPlayedMovesForGame(gameId);
+        if (moves == null)
+            return BadRequest();
 
         return Ok(moves);
     }
