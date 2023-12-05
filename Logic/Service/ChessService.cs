@@ -52,21 +52,21 @@ public class ChessService : IChessService
         return await _gameDal.GetMovesForGame(gameId);
     }
 
-    public async Task<string?> CreateNewGame(string playerOneUserId, string playerTwoUserId, string? whiteSideUserId)
+    public async Task<string?> CreateNewGame(string playerOneUserId, string playerTwoUserId, string? WhiteSideUserId)
     {
         var id = GetNewGameId();
         var game = GetNewGame();
 
-        if (!UserIdsAreValid(playerOneUserId, playerTwoUserId, whiteSideUserId))
+        if (!UserIdsAreValid(playerOneUserId, playerTwoUserId, WhiteSideUserId))
             return null;
 
-        whiteSideUserId ??= GetWhiteSideUserId(playerOneUserId, playerTwoUserId);
-        var blackSideUserId = GetBlackSideUserId(playerOneUserId, playerTwoUserId, whiteSideUserId);
+        WhiteSideUserId ??= GetWhiteSideUserId(playerOneUserId, playerTwoUserId);
+        var blackSideUserId = GetBlackSideUserId(playerOneUserId, playerTwoUserId, WhiteSideUserId);
 
         var gameInfoModel = new GameInfoModel()
         {
             Id = id,
-            WhiteSideUserId = whiteSideUserId,
+            WhiteSideUserId = WhiteSideUserId,
             BlackSideUserId = blackSideUserId,
             Game = game,
         };
