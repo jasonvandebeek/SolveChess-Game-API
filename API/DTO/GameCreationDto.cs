@@ -7,9 +7,7 @@ public class GameCreationDto
 {
 
     [Required]
-    public string PlayerOneUserId { get; set; } = null!;
-    [Required]
-    public string PlayerTwoUserId { get; set; } = null!;
+    public string OpponentUserId { get; set; } = null!;
 
     public string? WhiteSideUserId { get; set; }
 

@@ -135,7 +135,9 @@ public class GameDal : IGameDal
             CastlingRightWhiteQueenSide = gameInfo.Game.CastlingRightWhiteQueenSide,
             FullMoveNumber = gameInfo.Game.FullMoveNumber,
             HalfMoveClock = gameInfo.Game.HalfMoveClock,
-            SideToMove = gameInfo.Game.SideToMove
+            SideToMove = gameInfo.Game.SideToMove,
+            EnpassantSquareRank = null,
+            EnpassantSquareFile = null,
         };
 
         _dbContext.Game.Add(game);

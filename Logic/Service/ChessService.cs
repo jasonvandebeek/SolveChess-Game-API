@@ -52,12 +52,15 @@ public class ChessService : IChessService
         return await _gameDal.GetMovesForGame(gameId);
     }
 
-    public async Task CreateNewGame(string playerOneUserId, string playerTwoUserId, string? WhiteSideUserId)
+    public async Task<string?> CreateNewGame(string playerOneUserId, string playerTwoUserId, string? whiteSideUserId)
     {
         var id = GetNewGameId();
         var game = GetNewGame();
 
-        var whiteSideUserId = WhiteSideUserId ?? GetWhiteSideUserId(playerOneUserId, playerTwoUserId);
+        if (!UserIdsAreValid(playerOneUserId, playerTwoUserId, whiteSideUserId))
+            return null;
+
+        whiteSideUserId ??= GetWhiteSideUserId(playerOneUserId, playerTwoUserId);
         var blackSideUserId = GetBlackSideUserId(playerOneUserId, playerTwoUserId, whiteSideUserId);
 
         var gameInfoModel = new GameInfoModel()
@@ -69,6 +72,8 @@ public class ChessService : IChessService
         };
 
         await _gameDal.CreateGame(gameInfoModel);
+
+        return id;
     }
 
     public async Task<GameInfoModel?> GetGameWithId(string gameId)
@@ -99,6 +104,11 @@ public class ChessService : IChessService
         };
 
         return new Game(gameStateModel);
+    }
+
+    private static bool UserIdsAreValid(string playerOneUserId, string playerTwoUserId, string? whiteSideUserId)
+    {
+        return playerOneUserId != playerTwoUserId && (whiteSideUserId == playerOneUserId || whiteSideUserId == playerTwoUserId || whiteSideUserId == null);
     }
 
     private static readonly Random random = new();

@@ -6,6 +6,7 @@ using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Models;
 using SolveChess.Logic.Interfaces;
 using SolveChess.Logic.Chess.Utilities;
+using SolveChess.API.Exceptions;
 
 namespace SolveChess.API.Controllers;
 
@@ -44,8 +45,12 @@ public class GameController : Controller
         if (userId == null)
             return Unauthorized();
 
-        await _chessService.CreateNewGame(gameCreationDto.PlayerOneUserId, gameCreationDto.PlayerTwoUserId, gameCreationDto.WhiteSideUserId);
-        return Ok();
+        var id = await _chessService.CreateNewGame(userId, gameCreationDto.OpponentUserId, gameCreationDto.WhiteSideUserId);
+        if(id == null)
+            return BadRequest();
+
+        var uri = Url.Action("GetGame", new { gameId = id }) ?? throw new EndpointNotFoundException();
+        return Created(uri, id);
     }
 
     [HttpGet("{gameId}")]
@@ -58,8 +63,8 @@ public class GameController : Controller
         var gameDto = new GameDto()
         {
             Id = gameInfo.Id,
-            WhitePlayerId = gameInfo.WhiteSideUserId,
-            BlackPlayerId = gameInfo.BlackSideUserId,
+            WhiteSideUserId = gameInfo.WhiteSideUserId,
+            BlackSideUserId = gameInfo.BlackSideUserId,
             State = gameInfo.Game.State.ToString(),
             Fen = gameInfo.Game.Fen,
             SideToMove = gameInfo.Game.SideToMove.ToString(),

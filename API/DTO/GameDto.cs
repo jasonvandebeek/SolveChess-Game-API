@@ -10,9 +10,9 @@ public class GameDto
     public string Id { get; set; } = null!;
 
     [Required]
-    public string WhitePlayerId { get; set; } = null!;
+    public string WhiteSideUserId { get; set; } = null!;
     [Required]
-    public string BlackPlayerId { get; set; } = null!;
+    public string BlackSideUserId { get; set; } = null!;
 
     [Required]
     public string State { get; set; } = null!;
