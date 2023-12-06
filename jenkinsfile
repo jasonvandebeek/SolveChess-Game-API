@@ -39,16 +39,22 @@ pipeline {
 				}
 			}
 		}
+		stage("SonarQube Quality Gate") {
+			steps {
+				script {
+					timeout(time: 1, unit: 'HOURS') {
+						def qg = waitForQualityGate()
+						if (qg.status != 'OK') {
+							error "Pipeline aborted due to quality gate failure: ${qg.status}"
+						}
+					}
+				}
+			}
+		}
 		stage('Build Docker Image') {
 			steps {
 				script {
-					def testsPassed = currentBuild.resultIsBetterOrEqualTo('SUCCESS')
-
-					if (testsPassed) {
-						dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
-					} else {
-						error("Tests failed. Skipping Docker image build and publish.")
-					}
+					dockerImage = docker.build "${dockerRegistry}:${BUILD_NUMBER}"
 				}
 			}
 		}
