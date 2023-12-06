@@ -49,8 +49,7 @@ public class GameController : Controller
         if(id == null)
             return BadRequest();
 
-        var uri = Url.Action("GetGame", new { gameId = id }) ?? throw new EndpointNotFoundException();
-        return Created(uri, id);
+        return StatusCode(201, id);
     }
 
     [HttpGet("{gameId}")]
@@ -58,7 +57,7 @@ public class GameController : Controller
     {
         GameInfoModel? gameInfo = await _chessService.GetGameWithId(gameId);
         if(gameInfo == null)
-            return BadRequest();
+            return NotFound();
 
         var gameDto = new GameDto()
         {
@@ -83,9 +82,20 @@ public class GameController : Controller
     {
         IEnumerable<Move>? moves = await _chessService.GetPlayedMovesForGame(gameId);
         if (moves == null)
-            return BadRequest();
+            return NotFound();
 
-        return Ok(moves);
+        var movesDto = new List<MoveDto>();
+        foreach (var move in moves)
+        {
+            movesDto.Add(new MoveDto()
+            {
+                Number = move.Number,
+                Side = move.Side.ToString(),
+                Notation = move.Notation
+            });
+        }
+
+        return Ok(movesDto);
     }
 
 
