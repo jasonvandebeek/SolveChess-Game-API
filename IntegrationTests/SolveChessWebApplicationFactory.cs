@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,10 @@ internal class SolveChessWebApplicationFactory : WebApplicationFactory<Program>
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase");
+                options.ConfigureWarnings(warnings =>
+                {
+                    warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning);
+                });
             });
 
             Environment.SetEnvironmentVariable("SolveChess_JwtSecret", "TestSecretKeyForJwtTokensInIntegrationTests");

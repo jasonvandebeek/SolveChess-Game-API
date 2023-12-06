@@ -8,6 +8,9 @@ public class IsPromotionTypeAttribute : ValidationAttribute
 
     protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
     {
+        if(value == null)
+            return ValidationResult.Success!;
+
         if (value is not string stringValue)
         {
             return new ValidationResult("Invalid type. This attribute supports strings only!");

@@ -26,9 +26,7 @@ public class GameController : Controller
     [HttpPost("{gameId}/move")]
     public async Task<IActionResult> PlayMove(string gameId, [FromBody] MoveDataDto moveDto)
     {
-        string? userId = GetUserIdFromCookies();
-        if (userId == null)
-            return Unauthorized();
+        string userId = GetUserIdFromCookies();
 
         Move? move = await _chessService.PlayMoveOnGame(gameId, userId, moveDto.From, moveDto.To, moveDto.Promotion);
         if(move == null)
@@ -41,9 +39,7 @@ public class GameController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateGame([FromBody] GameCreationDto gameCreationDto)
     {
-        string? userId = GetUserIdFromCookies();
-        if (userId == null)
-            return Unauthorized();
+        string userId = GetUserIdFromCookies();
 
         var id = await _chessService.CreateNewGame(userId, gameCreationDto.OpponentUserId, gameCreationDto.WhiteSideUserId);
         if(id == null)
@@ -99,9 +95,10 @@ public class GameController : Controller
     }
 
 
-    private string? GetUserIdFromCookies()
+    private string GetUserIdFromCookies()
     {
-        return HttpContext.User.FindFirst("Id")?.Value;
+        var userId = HttpContext.User.FindFirst("Id")?.Value ?? throw new InvalidJwtTokenException();
+        return userId;
     }
 
 }

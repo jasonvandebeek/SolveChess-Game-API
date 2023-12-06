@@ -36,7 +36,10 @@ public class ChessService : IChessService
             return null;
 
         PieceType? promotionType = promotion != null ? (PieceType)Enum.Parse(typeof(PieceType), promotion) : null;
-        Move? move = gameInfoModel.Game.PlayMove((Square)from, (Square)to, promotionType);
+        var fromSquare = new Square(from.Rank, from.File);
+        var toSquare = new Square(to.Rank, to.File);
+
+        Move? move = gameInfoModel.Game.PlayMove(fromSquare, toSquare, promotionType);
         if (move == null)
             return move;
 
@@ -124,12 +127,12 @@ public class ChessService : IChessService
 
     private static bool UserHasAccessToGame(GameInfoModel gameInfoModel, string userId)
     {
-        return gameInfoModel.BlackSideUserId != userId || gameInfoModel.WhiteSideUserId != userId;
+        return gameInfoModel.BlackSideUserId == userId || gameInfoModel.WhiteSideUserId == userId;
     }
 
     private static bool IsUserToMove(GameInfoModel gameInfoModel, string userId)
     {
-        return (gameInfoModel.Game.SideToMove != Side.BLACK && gameInfoModel.BlackSideUserId == userId) || (gameInfoModel.Game.SideToMove != Side.WHITE && gameInfoModel.WhiteSideUserId == userId);
+        return (gameInfoModel.Game.SideToMove == Side.BLACK && gameInfoModel.BlackSideUserId == userId) || (gameInfoModel.Game.SideToMove == Side.WHITE && gameInfoModel.WhiteSideUserId == userId);
     }
 
 }
