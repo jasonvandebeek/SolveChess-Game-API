@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Utilities;
+using SolveChess.UnitTests.Helpers;
 
 namespace SolveChess.Logic.Chess.Pieces.Tests;
 
@@ -9,102 +10,19 @@ public class QueenTests
 {
 
     [TestMethod]
-    public void GetPossibleMovesTest_WhiteQueenFromD5EmptyBoard()
+    [DataRow("8/8/8/3Q4/8/8/8/8", "d5", new string[] { "c5", "b5", "a5", "e5", "f5", "g5", "h5", "d6", "d7", "d8", "d4", "d3", "d2", "d1", "c6", "b7", "a8", "e6", "f7", "g8", "c4", "b3", "a2", "e4", "f3", "g2", "h1"}, DisplayName = "AllMovesOnEmptyBoard")]
+    [DataRow("8/8/2RRR3/2RQR3/2RRR3/8/8/8", "d5", new string[] { }, DisplayName = "AllSidesBlockedNoMoves")]
+    [DataRow("8/8/8/5Q2/8/8/8/r2K4", "f5", new string[] { "b1" }, DisplayName = "KingInCheckOnlyMoveIsBlock")]
+    [DataRow("8/8/5Q2/8/3r4/8/8/3K4", "f6", new string[] { "d4" }, DisplayName = "KingInCheckOnlyMoveIsTake")]
+    public void GetPossibleMovesTest(string fen, string position, string[] moves)
     {
         //Arrange
-        var expected = new List<Square>() 
-        { 
-            new Square("C5"),
-            new Square("B5"),
-            new Square("A5"),
-            new Square("E5"),
-            new Square("F5"),
-            new Square("G5"),
-            new Square("H5"),
-            new Square("D6"),
-            new Square("D7"),
-            new Square("D8"),
-            new Square("D4"),
-            new Square("D3"),
-            new Square("D2"),
-            new Square("D1"),
-            new Square("C6"),
-            new Square("B7"),
-            new Square("A8"),
-            new Square("E6"),
-            new Square("F7"),
-            new Square("G8"),
-            new Square("C4"),
-            new Square("B3"),
-            new Square("A2"),
-            new Square("E4"),
-            new Square("F3"),
-            new Square("G2"),
-            new Square("H1")
-        };
+        var expected = SquareBuilderHelper.GetSquaresOfStringNotations(moves);
 
-        var board = new Board();
+        var board = new Board(fen);
         var piece = new Queen(Side.WHITE);
-        var square = new Square("D5");
 
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_WhiteQueenFromD5BlockedOnEachSide()
-    {
-        //Arrange
-        var expected = new List<Square>() { };
-
-        var board = new Board("8/8/2RRR3/2RQR3/2RRR3/8/8/8");
-        var piece = new Queen(Side.WHITE);
-        var square = new Square("D5");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_WhiteQueenFromF5_KingInCheck_OnlyMoveIsBlockB1()
-    {
-        //Arrange
-        var expected = new List<Square>() { new Square("B1") };
-
-        var board = new Board("8/8/8/5Q2/8/8/8/r2K4");
-        var piece = new Queen(Side.WHITE);
-        var square = new Square("F5");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_WhiteQueenFromF6_KingInCheck_OnlyMoveIsTakeD4()
-    {
-        //Arrange
-        var expected = new List<Square>() { new Square("D4") };
-
-        var board = new Board("8/8/5Q2/8/3r4/8/8/3K4");
-        var piece = new Queen(Side.WHITE);
-        var square = new Square("F6");
-
-        board.PlacePieceAtSquare(piece, square);
+        board.PlacePieceAtSquare(piece, new Square(position));
 
         //Act
         var result = piece.GetPossibleMoves(board).ToList();

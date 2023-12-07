@@ -34,6 +34,9 @@ public class King : PieceBase
 
     private IEnumerable<Square> WhiteSideCastlingMoves(Board board)
     {
+        if (!IsAtStartingPosition(board))
+            yield break;
+
         if (board.CastlingRightWhiteKingSide && KingSideClear(board))
             yield return new Square(7, 6);
 
@@ -41,8 +44,18 @@ public class King : PieceBase
             yield return new Square(7, 2);
     }
 
+    private bool IsAtStartingPosition(Board board)
+    {
+        var square = board.GetSquareOfPiece(this);
+
+        return (square.Equals(new Square("e1")) && Side == Side.WHITE) || (square.Equals(new Square("e8")) && Side == Side.BLACK);
+    }
+
     private IEnumerable<Square> BlackSideCastlingMoves(Board board)
     {
+        if (!IsAtStartingPosition(board))
+            yield break;
+
         if (board.CastlingRightBlackKingSide && KingSideClear(board))
             yield return new Square(0, 6);
 

@@ -2,6 +2,7 @@
 using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Chess.Utilities;
+using SolveChess.UnitTests.Helpers;
 
 namespace SolveChess.Logic.Chess.Pieces.Tests;
 
@@ -10,26 +11,21 @@ public class KingTests
 {
 
     [TestMethod]
-    public void GetPossibleMovesTest_WhiteKingFromD5EmptyBoard()
+    [DataRow("8/8/8/3K4/8/8/8/8", Side.WHITE, "d5", new string[] { "d6", "e6", "e5", "e4", "d4", "c4", "c5", "c6" }, DisplayName = "AllMovesWhiteKingOnEmptyBoard")]
+    [DataRow("8/8/8/8/8/8/8/R3K2R", Side.WHITE, "e1", new string[] { "d1", "f2", "d2", "e2", "f1", "c1", "g1" }, DisplayName = "AllMovesAndCastlingMovesWhiteKingCanCastleOnBothSides")]
+    [DataRow("r3k2r/8/8/8/8/8/8/8", Side.BLACK, "e8", new string[] { "c8", "d8", "f8", "g8", "d7", "e7", "f7" }, DisplayName = "AllMovesAndCastlingMovesBlackKingCanCastleOnBothSides")]
+    [DataRow("8/8/8/8/8/4k3/8/4K3", Side.WHITE, "e1", new string[] { "d1", "f1" }, DisplayName = "WhiteKingCantMoveIntoOpponentAttacks")]
+    [DataRow("8/8/8/8/8/8/4q3/4K3", Side.WHITE, "e1", new string[] { "e2" }, DisplayName = "WhiteKingOnlyMoveIsTake")]
+    [DataRow("8/8/8/8/8/2q5/2q5/4K3", Side.WHITE, "e1", new string[] { "f1" }, DisplayName = "SingleMoveWhiteKing")]
+    public void GetPossibleMovesTest(string fen, Side side, string position, string[] moves)
     {
         //Arrange
-        var expected = new List<Square>()
-        {
-            new Square("D6"),
-            new Square("E6"),
-            new Square("E5"),
-            new Square("E4"),
-            new Square("D4"),
-            new Square("C4"),
-            new Square("C5"),
-            new Square("C6")
-        };
+        var expected = SquareBuilderHelper.GetSquaresOfStringNotations(moves);
 
-        var board = new Board();
-        var piece = new King(Side.WHITE);
-        var square = new Square("D5");
+        var board = new Board(fen, true, true, true, true);
+        var piece = new King(side);
 
-        board.PlacePieceAtSquare(piece, square);
+        board.PlacePieceAtSquare(piece, new Square(position));
 
         //Act
         var result = piece.GetPossibleMoves(board).ToList();
@@ -39,222 +35,16 @@ public class KingTests
     }
 
     [TestMethod]
-    public void GetPossibleMovesTest_WhiteKingFromE1CanCastleBothSides()
+    [DataRow("8/8/8/8/8/8/3p4/4K3", DisplayName = "ByPawn")]
+    [DataRow("8/8/8/8/8/4r3/8/4K3", DisplayName = "ByRook")]
+    [DataRow("8/8/8/8/8/5n2/8/4K3", DisplayName = "ByKnight")]
+    [DataRow("8/8/8/8/1b6/8/8/4K3", DisplayName = "ByBishop")]
+    [DataRow("8/8/4q3/8/8/8/8/4K3", DisplayName = "ByQueen")]
+    [DataRow("8/8/8/8/8/8/4k3/4K3", DisplayName = "ByKing")]
+    public void IsCheckedTest(string fen)
     {
         //Arrange
-        var expected = new List<Square>()
-        {
-            new Square("D1"),
-            new Square("F2"),
-            new Square("D2"),
-            new Square("E2"),
-            new Square("F1"),
-            new Square("C1"),
-            new Square("G1")
-        };
-
-        var board = new Board("8/8/8/8/8/8/8/R3K2R", false, false, true, true);
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_BlackKingFromE8CanCastleBothSides()
-    {
-        //Arrange
-        var expected = new List<Square>()
-        {
-            new Square("C8"),
-            new Square("D8"),
-            new Square("F8"),
-            new Square("G8"),
-            new Square("D7"),
-            new Square("E7"),
-            new Square("F7")
-        };
-
-        var board = new Board("r3k2r/8/8/8/8/8/8/8", true, true);
-        var piece = new King(Side.BLACK);
-        var square = new Square("E8");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_WhiteKingFromE1CantMoveIntoOpposingKingOnE3()
-    {
-        //Arrange
-        var expected = new List<Square>()
-        {
-            new Square("D1"),
-            new Square("F1")
-        };
-
-        var board = new Board();
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        var opposingPiece = new King(Side.BLACK);
-        var opposingSquare = new Square("E3");
-
-        board.PlacePieceAtSquare(piece, square);
-        board.PlacePieceAtSquare(opposingPiece, opposingSquare);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_WhiteKingFromE1OnlyMoveIsTakeOnE2()
-    {
-        //Arrange
-        var expected = new List<Square>()
-        {
-            new Square("E2")
-        };
-
-        var board = new Board("8/8/8/8/8/8/4q3/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void GetPossibleMovesTest_WhiteKingFromE1OnlyMoveIsGoToF1()
-    {
-        //Arrange
-        var expected = new List<Square>()
-        {
-            new Square("F1")
-        };
-
-        var board = new Board("8/8/8/8/8/2q5/2q5/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.GetPossibleMoves(board).ToList();
-
-        //Assert
-        CollectionAssert.AreEquivalent(expected, result);
-    }
-
-    [TestMethod]
-    public void IsCheckedTestByPawn()
-    {
-        //Arrange
-        var board = new Board("8/8/8/8/8/8/3p4/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.IsChecked(board);
-
-        //Assert
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
-    public void IsCheckedTestByRook()
-    {
-        //Arrange
-        var board = new Board("8/8/8/8/8/4r3/8/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.IsChecked(board);
-
-        //Assert
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
-    public void IsCheckedTestByKnight()
-    {
-        //Arrange
-        var board = new Board("8/8/8/8/8/5n2/8/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.IsChecked(board);
-
-        //Assert
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
-    public void IsCheckedTestByBishop()
-    {
-        //Arrange
-        var board = new Board("8/8/8/8/1b6/8/8/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.IsChecked(board);
-
-        //Assert
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
-    public void IsCheckedTestByQueen()
-    {
-        //Arrange
-        var board = new Board("8/8/4q3/8/8/8/8/4K3");
-        var piece = new King(Side.WHITE);
-        var square = new Square("E1");
-
-        board.PlacePieceAtSquare(piece, square);
-
-        //Act
-        var result = piece.IsChecked(board);
-
-        //Assert
-        Assert.IsTrue(result);
-    }
-
-    [TestMethod]
-    public void IsCheckedTestByKing()
-    {
-        //Arrange
-        var board = new Board("8/8/8/8/8/8/4k3/4K3");
+        var board = new Board(fen);
         var piece = new King(Side.WHITE);
         var square = new Square("E1");
 
