@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SolveChess.Logic.Chess.Attributes;
-using SolveChess.Logic.Chess.Factories;
 using SolveChess.Logic.Chess.Pieces;
 using SolveChess.Logic.Exceptions;
 
@@ -18,35 +17,35 @@ public class BoardFenMapperTests
     {
         board = new Board();
 
-        board.PlacePieceAtSquare(new Rook(Side.BLACK), new Square(0, 0));
-        board.PlacePieceAtSquare(new Queen(Side.BLACK), new Square(0, 3));
-        board.PlacePieceAtSquare(new Rook(Side.BLACK), new Square(0, 5));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 0));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 2));
-        board.PlacePieceAtSquare(new King(Side.BLACK), new Square(1, 4));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 5));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 6));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(1, 7));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(2, 1));
-        board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square(2, 4));
-        board.PlacePieceAtSquare(new Knight(Side.BLACK), new Square(2, 5));
-        board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square(3, 2));
-        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square(3, 3));
-        board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square(3, 4));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(4, 0));
-        board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square(4, 5));
-        board.PlacePieceAtSquare(new Rook(Side.WHITE), new Square(5, 0));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(5, 2));
-        board.PlacePieceAtSquare(new Queen(Side.WHITE), new Square(5, 3));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 1));
-        board.PlacePieceAtSquare(new King(Side.WHITE), new Square(6, 3));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 4));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 5));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 6));
-        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square(6, 7));
-        board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square(7, 1));
-        board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square(7, 5));
-        board.PlacePieceAtSquare(new Rook(Side.WHITE), new Square(7, 7));
+        board.PlacePieceAtSquare(new Rook(Side.BLACK), new Square("a8"));
+        board.PlacePieceAtSquare(new Queen(Side.BLACK), new Square("d8"));
+        board.PlacePieceAtSquare(new Rook(Side.BLACK), new Square("f8"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("a7"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("c7"));
+        board.PlacePieceAtSquare(new King(Side.BLACK), new Square("e7"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("f7"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("g7"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("h7"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("b6"));
+        board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square("e6"));
+        board.PlacePieceAtSquare(new Knight(Side.BLACK), new Square("f6"));
+        board.PlacePieceAtSquare(new Bishop(Side.BLACK), new Square("c5"));
+        board.PlacePieceAtSquare(new Pawn(Side.BLACK), new Square("d5"));
+        board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square("e5"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("a4"));
+        board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square("f4"));
+        board.PlacePieceAtSquare(new Rook(Side.WHITE), new Square("a3"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("c3"));
+        board.PlacePieceAtSquare(new Queen(Side.WHITE), new Square("d3"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("b2"));
+        board.PlacePieceAtSquare(new King(Side.WHITE), new Square("d2"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("e2"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("f2"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("g2"));
+        board.PlacePieceAtSquare(new Pawn(Side.WHITE), new Square("h2"));
+        board.PlacePieceAtSquare(new Knight(Side.WHITE), new Square("b1"));
+        board.PlacePieceAtSquare(new Bishop(Side.WHITE), new Square("f1"));
+        board.PlacePieceAtSquare(new Rook(Side.WHITE), new Square("h1"));
 
         fen = "r2q1r2/p1p1kppp/1p2bn2/2bpN3/P4B2/R1PQ4/1P1KPPPP/1N3B1R";
     }
@@ -87,7 +86,7 @@ public class BoardFenMapperTests
     }
 
     [TestMethod]
-    public void GetBoardStateFromFenTest_InvalidFenRankLength_ThrowsException()
+    public void GetBoardStateFromFenTest_InvalidFenRankLengthThrowsException()
     {
         //Arrange
 
@@ -100,7 +99,7 @@ public class BoardFenMapperTests
     }
 
     [TestMethod]
-    public void GetBoardStateFromFenTest_InvalidFenStructure_ThrowsException()
+    public void GetBoardStateFromFenTest_InvalidFenStructureThrowsException()
     {
         //Arrange
 

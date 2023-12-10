@@ -44,8 +44,8 @@ public class BoardTests
     {
         //Arrange
         var board = new Board("8/8/8/3P4/8/8/8/8");
-        var from = new Square(3, 3);
-        var to = new Square(2, 3);
+        var from = new Square("d5");
+        var to = new Square("d6");
         var piece = board.BoardArray[3, 3]!;
 
         //Act
@@ -63,8 +63,8 @@ public class BoardTests
     {
         //Arrange
         var board = new Board("8/8/8/3P4/8/8/8/8");
-        var from = new Square(4, 3);
-        var to = new Square(3, 3);
+        var from = new Square("d4");
+        var to = new Square("d5");
         var piece = board.BoardArray[3, 3]!;
 
         //Act
@@ -82,8 +82,8 @@ public class BoardTests
     {
         //Arrange
         var board = new Board("8/3P4/8/8/8/8/8/8");
-        var from = new Square(1, 3);
-        var to = new Square(0, 3);
+        var from = new Square("d7");
+        var to = new Square("d8");
         var piece = board.BoardArray[1, 3]!;
         var promotionType = PieceType.QUEEN;
 
@@ -101,14 +101,14 @@ public class BoardTests
     {
         //Arrange
         var board = new Board("8/3P4/8/8/8/8/8/8");
-        var from = new Square(1, 4);
-        var to = new Square(0, 4);
+        var from = new Square("e7");
+        var to = new Square("e8");
         var promotionType = PieceType.QUEEN;
 
         //Act
         board.PromotePiece(from, to, promotionType);
-        var OldLocationPiece = board.BoardArray[0, 3];
-        var NewLocationPiece = board.BoardArray[0, 3];
+        var OldLocationPiece = board.BoardArray[1, 4];
+        var NewLocationPiece = board.BoardArray[0, 4];
 
         //Assert
         Assert.AreEqual(null, OldLocationPiece);

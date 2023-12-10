@@ -101,7 +101,7 @@ public class GameTests
     }
 
     [TestMethod]
-    public void PlayMoveTest_NewGameMoveE2ToE4_EnpassantSquareIsE3()
+    public void PlayMoveTest_NewGameMoveE2ToE4EnpassantSquareIsE3()
     {
         //Arrange
         var expected = new Square("E3");
@@ -434,7 +434,7 @@ public class GameTests
     }
 
     [TestMethod]
-    public void PlayMoveTest_WhitePawnFromE7ToE8PromotionToKing_ExceptionThrown()
+    public void PlayMoveTest_WhitePawnFromE7ToE8PromotionToKingExceptionThrown()
     {
         //Arrange
         var gameStateModel = new GameStateModel()
@@ -464,7 +464,7 @@ public class GameTests
     }
 
     [TestMethod]
-    public void PlayMoveTest_WhitePawnFromE7ToE8PromotionToPawn_ExceptionThrown()
+    public void PlayMoveTest_WhitePawnFromE7ToE8PromotionToPawnExceptionThrown()
     {
         //Arrange
         var gameStateModel = new GameStateModel()
@@ -494,7 +494,7 @@ public class GameTests
     }
 
     [TestMethod]
-    public void PlayMoveTest_WhitePawnFromE7ToE8PromotionNotGiven_ExceptionThrown()
+    public void PlayMoveTest_WhitePawnFromE7ToE8PromotionNotGivenExceptionThrown()
     {
         //Arrange
         var gameStateModel = new GameStateModel()
@@ -709,6 +709,30 @@ public class GameTests
 
         //Assert
         Assert.AreEqual(expected, result);
+    }
+
+    [TestMethod]
+    public void PlayMoveTest_GameStateIsNotInProgressMoveNull()
+    {
+        //Arrange
+        var gameStateModel = new GameStateModel()
+        {
+            State = GameState.WHITE_VICTORY,
+            Fen = "k7/7R/8/2Q5/8/8/8/8",
+            FullMoveNumber = 1,
+            HalfMoveClock = 0,
+            SideToMove = Side.WHITE
+        };
+
+        var game = new Game(gameStateModel);
+        var from = new Square("C5");
+        var to = new Square("B5");
+
+        //Act
+        var result = game.PlayMove(from, to, null);
+
+        //Assert
+        Assert.AreEqual(null, result);
     }
 
 }

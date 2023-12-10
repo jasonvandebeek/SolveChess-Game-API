@@ -10,7 +10,7 @@ public class PieceBaseTests
     [TestMethod]
     [DataRow("d5", "e4", "8/8/8/3B4/8/8/8/8", true, DisplayName = "PossibleMove")]
     [DataRow("d5", "f4", "8/8/8/3B4/8/8/8/8", false, DisplayName = "ImpossibleMove")]
-    public void CanMoveToSquareTest_ReturnFalse(string startingSquareNotation, string targetSquareNotation, string fen, bool expected)
+    public void CanMoveToSquareTest(string startingSquareNotation, string targetSquareNotation, string fen, bool expected)
     {
         //Arrange
         var startingSquare = new Square(startingSquareNotation);

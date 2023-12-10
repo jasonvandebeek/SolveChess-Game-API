@@ -11,9 +11,9 @@ public class KingTests
 {
 
     [TestMethod]
-    [DataRow("8/8/8/3K4/8/8/8/8", Side.WHITE, "d5", new string[] { "d6", "e6", "e5", "e4", "d4", "c4", "c5", "c6" }, DisplayName = "AllMovesWhiteKingOnEmptyBoard")]
-    [DataRow("8/8/8/8/8/8/8/R3K2R", Side.WHITE, "e1", new string[] { "d1", "f2", "d2", "e2", "f1", "c1", "g1" }, DisplayName = "AllMovesAndCastlingMovesWhiteKingCanCastleOnBothSides")]
-    [DataRow("r3k2r/8/8/8/8/8/8/8", Side.BLACK, "e8", new string[] { "c8", "d8", "f8", "g8", "d7", "e7", "f7" }, DisplayName = "AllMovesAndCastlingMovesBlackKingCanCastleOnBothSides")]
+    [DataRow("8/8/8/3K4/8/8/8/8", Side.WHITE, "d5", new string[] { "d6", "e6", "e5", "e4", "d4", "c4", "c5", "c6" }, DisplayName = "AllMovesForWhiteKingOnEmptyBoard")]
+    [DataRow("8/8/8/8/8/8/8/R3K2R", Side.WHITE, "e1", new string[] { "d1", "f2", "d2", "e2", "f1", "c1", "g1" }, DisplayName = "AllMovesAndCastlingMovesForWhiteKingCanCastleOnBothSides")]
+    [DataRow("r3k2r/8/8/8/8/8/8/8", Side.BLACK, "e8", new string[] { "c8", "d8", "f8", "g8", "d7", "e7", "f7" }, DisplayName = "AllMovesAndCastlingMovesForBlackKingCanCastleOnBothSides")]
     [DataRow("8/8/8/8/8/4k3/8/4K3", Side.WHITE, "e1", new string[] { "d1", "f1" }, DisplayName = "WhiteKingCantMoveIntoOpponentAttacks")]
     [DataRow("8/8/8/8/8/8/4q3/4K3", Side.WHITE, "e1", new string[] { "e2" }, DisplayName = "WhiteKingOnlyMoveIsTake")]
     [DataRow("8/8/8/8/8/2q5/2q5/4K3", Side.WHITE, "e1", new string[] { "f1" }, DisplayName = "SingleMoveWhiteKing")]
@@ -26,7 +26,7 @@ public class KingTests
         var piece = new King(side);
 
         board.PlacePieceAtSquare(piece, new Square(position));
-
+        
         //Act
         var result = piece.GetPossibleMoves(board).ToList();
 

@@ -39,7 +39,7 @@ public class Game
     public Move? PlayMove(Square from, Square to, PieceType? promotion)
     {
         PieceBase? piece = board.GetPieceAt(from);
-        if (piece == null || piece.Side != SideToMove || !piece.CanMoveToSquare(to, board))
+        if (State != GameState.IN_PROGRESS || piece == null || piece.Side != SideToMove || !piece.CanMoveToSquare(to, board))
             return null;
 
         UpdateEnpassantSquare(piece, from, to);

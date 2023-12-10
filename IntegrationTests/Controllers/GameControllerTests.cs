@@ -281,8 +281,8 @@ public class GameControllerTests
                 rank = 6,
                 file = 4
             },
-            to = new 
-            { 
+            to = new
+            {
                 rank = 4,
                 file = 4
             },
