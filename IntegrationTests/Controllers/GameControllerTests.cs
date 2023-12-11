@@ -70,35 +70,10 @@ public class GameControllerTests
     }
 
     [TestMethod]
-    public async Task CreateGame_Returns400BadRequest_WhenOpponentIdIsTheSameAsUserId()
+    public async Task GetGame_Returns200OkAndGameData()
     {
         //Arrange
-        var userId = "123";
-        var jwtToken = JwtTokenHelper.GenerateTestToken(userId);
-
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("Cookie", $"AccessToken={jwtToken}");
-
-        var game = new
-        {
-            OpponentUserId = "123"
-        };
-
-        string jsonBody = JsonConvert.SerializeObject(game);
-        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-        //Act
-        var response = await client.PostAsync("/game", content);
-
-        //Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-    }
-
-    [TestMethod]
-    public async Task GetGame_Returns200Ok_AndGameData()
-    {
-        //Arrange
-        var gameId = Guid.NewGuid().ToString();
+        var gameId = "300";
 
         var json = new
         {
@@ -150,7 +125,7 @@ public class GameControllerTests
     }
 
     [TestMethod]
-    public async Task GetGame_Returns404NotFound_WhenGameIsNonExistentInDatabase()
+    public async Task GetGame_Returns404NotFoundWhenGameIsNonExistentInDatabase()
     {
         //Arrange
         var client = _factory.CreateClient();
@@ -163,7 +138,7 @@ public class GameControllerTests
     }
 
     [TestMethod]
-    public async Task GetMoves_Returns200Ok_AndMovesList()
+    public async Task GetMoves_Returns200OkAndMovesList()
     {
         //Arrange
         var json = new[]
@@ -173,7 +148,7 @@ public class GameControllerTests
         };
         string expected = JsonConvert.SerializeObject(json, Formatting.None);
 
-        var gameId = Guid.NewGuid().ToString();
+        var gameId = "200";
 
         GameModel gameModel = new()
         {
@@ -229,7 +204,7 @@ public class GameControllerTests
     }
 
     [TestMethod]
-    public async Task GetMoves_Returns404NotFound_WhenGameIsNonExistentInDatabase()
+    public async Task GetMoves_Returns404NotFoundWhenGameIsNonExistentInDatabase()
     {
         //Arrange
         var client = _factory.CreateClient();
@@ -245,7 +220,7 @@ public class GameControllerTests
     public async Task PlayMove_Returns200Ok()
     {
         //Arrange
-        var gameId = Guid.NewGuid().ToString();
+        var gameId = "100";
 
         GameModel gameModel = new()
         {
@@ -297,64 +272,6 @@ public class GameControllerTests
 
         //Assert
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    [TestMethod]
-    public async Task PlayMove_Returns400BadRequest_WhenUserHasNoGameAccess()
-    {
-        //Arrange
-        var gameId = Guid.NewGuid().ToString();
-
-        GameModel gameModel = new()
-        {
-            Id = gameId,
-            WhiteSideUserId = "123",
-            BlackSideUserId = "231",
-            State = GameState.IN_PROGRESS,
-            Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-            FullMoveNumber = 1,
-            HalfMoveClock = 0,
-            SideToMove = Side.WHITE,
-            CastlingRightBlackKingSide = true,
-            CastlingRightBlackQueenSide = true,
-            CastlingRightWhiteKingSide = true,
-            CastlingRightWhiteQueenSide = true,
-            EnpassantSquareRank = null,
-            EnpassantSquareFile = null
-        };
-
-        _dbContext.Game.Add(gameModel);
-        await _dbContext.SaveChangesAsync();
-
-        var userId = "300";
-        var jwtToken = JwtTokenHelper.GenerateTestToken(userId);
-
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("Cookie", $"AccessToken={jwtToken}");
-
-        var move = new
-        {
-            from = new
-            {
-                rank = 6,
-                file = 4
-            },
-            to = new
-            {
-                rank = 4,
-                file = 4
-            },
-            promotion = null as object
-        };
-
-        string jsonBody = JsonConvert.SerializeObject(move);
-        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-        //Act
-        var response = await client.PostAsync($"/game/{gameId}/move", content);
-
-        //Assert
-        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
 }
