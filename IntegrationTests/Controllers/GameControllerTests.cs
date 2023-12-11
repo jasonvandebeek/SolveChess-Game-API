@@ -33,7 +33,7 @@ public class GameControllerTests
     }
 
     [TestMethod]
-    public async Task CreateGame_Returns201Created_WhenUserIsAuthenticated()
+    public async Task CreateGame_Returns201CreatedUserIsAuthenticated()
     {
         //Arrange
         var userId = "123";

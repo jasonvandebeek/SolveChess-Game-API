@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        dockerRegistry = "jasonvandebeek/solvechess-auth-api"
+        dockerRegistry = "jasonvandebeek/solvechess-game-api"
         dockerRegistryCredential = 'dockerhub_id'  
 		scannerHome = tool 'SonarScanner for MSBuild'		
     }
