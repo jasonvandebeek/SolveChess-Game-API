@@ -56,7 +56,6 @@ public class GameDal : IGameDal
             await transaction.RollbackAsync();
             throw new DatabaseException("An error occured while updating game and creating move.", exception);
         }
-
     }
 
     private async Task UpdateGame(string gameId, Game game)

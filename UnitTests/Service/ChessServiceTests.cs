@@ -6,7 +6,6 @@ using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.DAL;
 using SolveChess.Logic.Interfaces;
 using SolveChess.Logic.Models;
-using SolveChess.Logic.Service;
 
 namespace SolveChess.Logic.Service.Tests;
 

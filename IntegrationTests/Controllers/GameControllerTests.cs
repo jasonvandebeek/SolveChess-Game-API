@@ -271,6 +271,17 @@ public class GameControllerTests
 
         //Assert
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+        var game = await _dbContext.Game.FirstOrDefaultAsync(g => g.Id == gameId);
+        Assert.IsNotNull(game);
+        Assert.AreEqual("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR", game.Fen);
+        Assert.AreEqual(Side.BLACK, game.SideToMove);
+
+        var moves = await _dbContext.Move.Where(m => m.GameId == gameId).ToListAsync();
+        Assert.IsNotNull(moves);
+        Assert.AreEqual(1, moves[0].Number);
+        Assert.AreEqual(Side.WHITE, moves[0].Side);
+        Assert.AreEqual("e4", moves[0].Notation);
     }
 
 }
