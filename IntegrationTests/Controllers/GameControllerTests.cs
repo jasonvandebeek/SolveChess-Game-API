@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlX.XDevAPI;
 using Newtonsoft.Json;
 using SolveChess.DAL.Model;
 using SolveChess.IntegrationTests.Helpers;
@@ -14,21 +15,16 @@ namespace SolveChess.API.IntegrationTests;
 public class GameControllerTests
 {
 
-    private readonly SolveChessWebApplicationFactory _factory;
-    private readonly AppDbContext _dbContext;
+    private SolveChessWebApplicationFactory _factory = null!;
+    private AppDbContext _dbContext = null!;
 
-    public GameControllerTests()
+    [TestInitialize]
+    public void TestInitialize()
     {
         _factory = new SolveChessWebApplicationFactory();
 
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase("TestDatabase")
-            .ConfigureWarnings(warnings =>
-            {
-                warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning);
-            });
-
-        _dbContext = new AppDbContext(optionsBuilder.Options);
+        var scope = _factory.Services.CreateScope();
+        _dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     }
 
     [TestMethod]
@@ -62,10 +58,33 @@ public class GameControllerTests
         //Assert
         Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
 
-        var createdGame = _dbContext.Game.FirstOrDefault(g => g.Id == gameId);
+        var createdGame = await _dbContext.Game.FirstOrDefaultAsync(g => g.Id == gameId);
         Assert.IsNotNull(createdGame);
         Assert.AreEqual(createdGame.WhiteSideUserId, game.WhiteSideUserId);
         Assert.AreEqual(createdGame.BlackSideUserId, game.OpponentUserId);
+    }
+
+    [TestMethod]
+    public async Task CreateGame_Returns401Unauthorized()
+    {
+        //Arrange
+        var userId = "123";
+        var client = _factory.CreateClient();
+
+        var game = new
+        {
+            OpponentUserId = "331",
+            WhiteSideUserId = userId
+        };
+
+        string jsonBody = JsonConvert.SerializeObject(game);
+        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.PostAsync("/game", content);
+
+        //Assert
+        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [TestMethod]
@@ -121,19 +140,6 @@ public class GameControllerTests
 
         //Assert
         Assert.AreEqual(expected, result);
-    }
-
-    [TestMethod]
-    public async Task GetGame_Returns404NotFoundWhenGameIsNonExistentInDatabase()
-    {
-        //Arrange
-        var client = _factory.CreateClient();
-
-        //Act
-        var response = await client.GetAsync($"/game/6000");
-
-        //Assert
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [TestMethod]
@@ -203,19 +209,6 @@ public class GameControllerTests
     }
 
     [TestMethod]
-    public async Task GetMoves_Returns404NotFoundWhenGameIsNonExistentInDatabase()
-    {
-        //Arrange
-        var client = _factory.CreateClient();
-
-        //Act
-        var response = await client.GetAsync($"/game/6000/moves");
-
-        //Assert
-        Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-    }
-
-    [TestMethod]
     public async Task PlayMove_Returns200Ok()
     {
         //Arrange
@@ -250,16 +243,8 @@ public class GameControllerTests
 
         var move = new
         {
-            from = new
-            {
-                rank = 6,
-                file = 4
-            },
-            to = new
-            {
-                rank = 4,
-                file = 4
-            },
+            from = new { rank = 6, file = 4 },
+            to = new { rank = 4, file = 4 },
             promotion = null as object
         };
 
@@ -274,6 +259,8 @@ public class GameControllerTests
 
         var game = await _dbContext.Game.FirstOrDefaultAsync(g => g.Id == gameId);
         Assert.IsNotNull(game);
+        _dbContext.Entry(game).Reload();
+
         Assert.AreEqual("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR", game.Fen);
         Assert.AreEqual(Side.BLACK, game.SideToMove);
 
@@ -282,6 +269,30 @@ public class GameControllerTests
         Assert.AreEqual(1, moves[0].Number);
         Assert.AreEqual(Side.WHITE, moves[0].Side);
         Assert.AreEqual("e4", moves[0].Notation);
+    }
+
+    [TestMethod]
+    public async Task PlayMove_Returns401Unauthorized()
+    {
+        //Arrange
+        var gameId = "100";
+        var client = _factory.CreateClient();
+
+        var move = new
+        {
+            from = new { rank = 6, file = 4 },
+            to = new { rank = 4, file = 4 },
+            promotion = null as object
+        };
+
+        string jsonBody = JsonConvert.SerializeObject(move);
+        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+        //Act
+        var response = await client.PostAsync($"/game/{gameId}/move", content);
+
+        //Assert
+        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
 }

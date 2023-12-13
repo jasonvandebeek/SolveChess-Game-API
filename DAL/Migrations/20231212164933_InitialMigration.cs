@@ -14,26 +14,12 @@ namespace DAL.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Username = table.Column<string>(type: "varchar(255)", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Game",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "varchar(255)", nullable: false),
-                    WhitePlayerId = table.Column<string>(type: "varchar(255)", nullable: false),
-                    BlackPlayerId = table.Column<string>(type: "varchar(255)", nullable: false),
+                    WhiteSideUserId = table.Column<string>(type: "longtext", nullable: false),
+                    BlackSideUserId = table.Column<string>(type: "longtext", nullable: false),
                     State = table.Column<int>(type: "int", nullable: false),
                     Fen = table.Column<string>(type: "longtext", nullable: false),
                     FullMoveNumber = table.Column<int>(type: "int", nullable: false),
@@ -49,18 +35,6 @@ namespace DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Game", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Game_User_BlackPlayerId",
-                        column: x => x.BlackPlayerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Game_User_WhitePlayerId",
-                        column: x => x.WhitePlayerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -84,22 +58,6 @@ namespace DAL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Game_BlackPlayerId",
-                table: "Game",
-                column: "BlackPlayerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Game_WhitePlayerId",
-                table: "Game",
-                column: "WhitePlayerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_Username",
-                table: "User",
-                column: "Username",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -110,9 +68,6 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Game");
-
-            migrationBuilder.DropTable(
-                name: "User");
         }
     }
 }

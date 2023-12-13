@@ -22,26 +22,26 @@ public class GameController : Controller
         _chessService = chessService;
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPost("{gameId}/move")]
     public async Task<IActionResult> PlayMove(string gameId, [FromBody] MoveDataDto moveDto)
     {
-        //string userId = GetUserIdFromCookies();
+        string userId = GetUserIdFromCookies();
 
-        Move? move = await _chessService.PlayMoveOnGame(gameId, "200", moveDto.From, moveDto.To, moveDto.Promotion);
+        Move? move = await _chessService.PlayMoveOnGame(gameId, userId, moveDto.From, moveDto.To, moveDto.Promotion);
         if(move == null)
             return BadRequest();
 
         return Ok();
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> CreateGame([FromBody] GameCreationDto gameCreationDto)
     {
-        //string userId = GetUserIdFromCookies();
+        string userId = GetUserIdFromCookies();
 
-        var id = await _chessService.CreateNewGame("200", gameCreationDto.OpponentUserId, gameCreationDto.WhiteSideUserId);
+        var id = await _chessService.CreateNewGame(userId, gameCreationDto.OpponentUserId, gameCreationDto.WhiteSideUserId);
         if(id == null)
             return BadRequest();
 

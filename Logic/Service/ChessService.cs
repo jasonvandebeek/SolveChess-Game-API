@@ -20,15 +20,6 @@ public class ChessService : IChessService
         _gameDal = gameDal;
     }
 
-    public async Task<bool> UserHasAccessToGame(string gameId, string userId)
-    {
-        GameInfoModel? gameInfoModel = await GetGameWithId(gameId);
-        if(gameInfoModel == null)
-            return false;
-
-        return UserHasAccessToGame(gameInfoModel, userId);
-    }
-
     public async Task<Move?> PlayMoveOnGame(string gameId, string userId, ISquare from, ISquare to, string? promotion)
     { 
         GameInfoModel? gameInfoModel = await GetGameWithId(gameId);

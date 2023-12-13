@@ -11,7 +11,7 @@ using SolveChess.DAL.Model;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231108160744_InitialMigration")]
+    [Migration("20231212164933_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -22,14 +22,14 @@ namespace DAL.Migrations
                 .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("SolveChess.DAL.Model.Game", b =>
+            modelBuilder.Entity("SolveChess.DAL.Model.GameModel", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("BlackPlayerId")
+                    b.Property<string>("BlackSideUserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("CastlingRightBlackKingSide")
                         .HasColumnType("tinyint(1)");
@@ -65,20 +65,16 @@ namespace DAL.Migrations
                     b.Property<int>("State")
                         .HasColumnType("int");
 
-                    b.Property<string>("WhitePlayerId")
+                    b.Property<string>("WhiteSideUserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BlackPlayerId");
-
-                    b.HasIndex("WhitePlayerId");
 
                     b.ToTable("Game");
                 });
 
-            modelBuilder.Entity("SolveChess.DAL.Model.Move", b =>
+            modelBuilder.Entity("SolveChess.DAL.Model.MoveModel", b =>
                 {
                     b.Property<string>("GameId")
                         .HasColumnType("varchar(255)");
@@ -98,48 +94,9 @@ namespace DAL.Migrations
                     b.ToTable("Move");
                 });
 
-            modelBuilder.Entity("SolveChess.DAL.Model.User", b =>
+            modelBuilder.Entity("SolveChess.DAL.Model.MoveModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
-
-                    b.ToTable("User");
-                });
-
-            modelBuilder.Entity("SolveChess.DAL.Model.Game", b =>
-                {
-                    b.HasOne("SolveChess.DAL.Model.User", "BlackPlayer")
-                        .WithMany()
-                        .HasForeignKey("BlackPlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SolveChess.DAL.Model.User", "WhitePlayer")
-                        .WithMany()
-                        .HasForeignKey("WhitePlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BlackPlayer");
-
-                    b.Navigation("WhitePlayer");
-                });
-
-            modelBuilder.Entity("SolveChess.DAL.Model.Move", b =>
-                {
-                    b.HasOne("SolveChess.DAL.Model.Game", "Game")
+                    b.HasOne("SolveChess.DAL.Model.GameModel", "Game")
                         .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -27,12 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(mysqlConnectionString);
 });
 
-builder.Services.AddScoped<IGameDal, GameDal>(provider =>
-{
-    var dbContextOptions = provider.GetRequiredService<DbContextOptions<AppDbContext>>();
-
-    return new GameDal(dbContextOptions);
-});
+builder.Services.AddScoped<IGameDal, GameDal>();
 
 builder.Services.AddScoped<IClientCommunicationService, WebsocketClientCommunicationService>();
 

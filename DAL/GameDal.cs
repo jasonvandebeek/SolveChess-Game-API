@@ -14,9 +14,9 @@ public class GameDal : IGameDal
 
     private readonly AppDbContext _dbContext;
 
-    public GameDal(DbContextOptions<AppDbContext> options)
-    { 
-        _dbContext = new AppDbContext(options);
+    public GameDal(AppDbContext dbContext)
+    {
+        _dbContext = dbContext;
     }
 
     public async Task<IEnumerable<Move>?> GetMovesForGame(string gameId)
