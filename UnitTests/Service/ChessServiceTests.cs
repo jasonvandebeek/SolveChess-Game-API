@@ -21,29 +21,24 @@ public class ChessServiceTests
 
         var gameDalMock = new Mock<IGameDal>();
         gameDalMock.Setup(dal => dal.GetGameWithId(It.IsAny<string>()))
-            .ReturnsAsync
-            (
-                new GameInfoModel()
+            .ReturnsAsync(new GameInfoModel()
+            {
+                Id = "123",
+                WhiteSideUserId = "330",
+                BlackSideUserId = "400",
+                Game = new Game(new GameStateModel()
                 {
-                    Id = "123",
-                    WhiteSideUserId = "330",
-                    BlackSideUserId = "400",
-                    Game = new Game(
-                        new GameStateModel()
-                        {
-                            State = GameState.IN_PROGRESS,
-                            Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-                            CastlingRightBlackKingSide = true,
-                            CastlingRightBlackQueenSide = true,
-                            CastlingRightWhiteKingSide = true,
-                            CastlingRightWhiteQueenSide = true,
-                            FullMoveNumber = 1,
-                            HalfMoveClock = 0,
-                            SideToMove = Side.WHITE
-                        }
-                    )
-                }
-            );
+                    State = GameState.IN_PROGRESS,
+                    Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+                    CastlingRightBlackKingSide = true,
+                    CastlingRightBlackQueenSide = true,
+                    CastlingRightWhiteKingSide = true,
+                    CastlingRightWhiteQueenSide = true,
+                    FullMoveNumber = 1,
+                    HalfMoveClock = 0,
+                    SideToMove = Side.WHITE
+                })
+            });
 
         var communicationServiceMock = new Mock<IClientCommunicationService>();
 
@@ -83,29 +78,24 @@ public class ChessServiceTests
         //Arrange
         var gameDalMock = new Mock<IGameDal>();
         gameDalMock.Setup(dal => dal.GetGameWithId(It.IsAny<string>()))
-            .ReturnsAsync
-            (
-                new GameInfoModel()
+            .ReturnsAsync(new GameInfoModel()
+            {
+                Id = "123",
+                WhiteSideUserId = "444",
+                BlackSideUserId = "400",
+                Game = new Game(new GameStateModel() 
                 {
-                    Id = "123",
-                    WhiteSideUserId = "444",
-                    BlackSideUserId = "400",
-                    Game = new Game(
-                        new GameStateModel()
-                        {
-                            State = GameState.IN_PROGRESS,
-                            Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-                            CastlingRightBlackKingSide = true,
-                            CastlingRightBlackQueenSide = true,
-                            CastlingRightWhiteKingSide = true,
-                            CastlingRightWhiteQueenSide = true,
-                            FullMoveNumber = 1,
-                            HalfMoveClock = 0,
-                            SideToMove = Side.WHITE
-                        }
-                    )
-                }
-            );
+                    State = GameState.IN_PROGRESS,
+                    Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+                    CastlingRightBlackKingSide = true,
+                    CastlingRightBlackQueenSide = true,
+                    CastlingRightWhiteKingSide = true,
+                    CastlingRightWhiteQueenSide = true,
+                    FullMoveNumber = 1,
+                    HalfMoveClock = 0,
+                    SideToMove = Side.WHITE
+                })
+            });
 
         var communicationServiceMock = new Mock<IClientCommunicationService>();
 
@@ -124,29 +114,24 @@ public class ChessServiceTests
         //Arrange
         var gameDalMock = new Mock<IGameDal>();
         gameDalMock.Setup(dal => dal.GetGameWithId(It.IsAny<string>()))
-            .ReturnsAsync
-            (
-                new GameInfoModel()
+            .ReturnsAsync(new GameInfoModel()
+            {
+                Id = "123",
+                WhiteSideUserId = "330",
+                BlackSideUserId = "400",
+                Game = new Game(new GameStateModel()
                 {
-                    Id = "123",
-                    WhiteSideUserId = "330",
-                    BlackSideUserId = "400",
-                    Game = new Game(
-                        new GameStateModel()
-                        {
-                            State = GameState.IN_PROGRESS,
-                            Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
-                            CastlingRightBlackKingSide = true,
-                            CastlingRightBlackQueenSide = true,
-                            CastlingRightWhiteKingSide = true,
-                            CastlingRightWhiteQueenSide = true,
-                            FullMoveNumber = 2,
-                            HalfMoveClock = 0,
-                            SideToMove = Side.BLACK
-                        }
-                    )
-                }
-            );
+                    State = GameState.IN_PROGRESS,
+                    Fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR",
+                    CastlingRightBlackKingSide = true,
+                    CastlingRightBlackQueenSide = true,
+                    CastlingRightWhiteKingSide = true,
+                    CastlingRightWhiteQueenSide = true,
+                    FullMoveNumber = 2,
+                    HalfMoveClock = 0,
+                    SideToMove = Side.BLACK
+                })
+            });
 
         var communicationServiceMock = new Mock<IClientCommunicationService>();
 
