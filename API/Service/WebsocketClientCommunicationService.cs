@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SolveChess.API.DTO;
 using SolveChess.API.Websocket;
+using SolveChess.Logic.Chess.Attributes;
+using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SolveChess.API.Service;
 
@@ -15,9 +19,27 @@ public class WebsocketClientCommunicationService : IClientCommunicationService
         _hubContext = hubContext;
     }
 
-    public async Task SendMoveToGame(string gameId, Move move)
+    public async Task SendMoveToGame(string gameId, Move move, ISquare from, ISquare to, PieceType? promotion)
     {
-        await _hubContext.Clients.Group(gameId).SendAsync("ReceiveMove", move);
+        var data = new OutgoingMoveDto
+        {
+            Number = move.Number,
+            Side = move.Side.ToString(),
+            Notation = move.Notation,
+            From = new SquareDto()
+            {
+                Rank = from.Rank,
+                File = from.File
+            },
+            To = new SquareDto()
+            {
+                Rank = to.Rank,
+                File = to.File
+            },
+            Promotion = promotion.ToString()
+        };
+
+        await _hubContext.Clients.Group(gameId).SendAsync("ReceiveMove", data);
     }
 
 }

@@ -36,7 +36,7 @@ public class ChessService : IChessService
 
         await _gameDal.UpdateGameAndCreateMove(gameId, gameInfoModel.Game, move);
 
-        await _clientCommunicationService.SendMoveToGame(gameId, move);
+        await _clientCommunicationService.SendMoveToGame(gameId, move, fromSquare, toSquare, promotionType);
 
         return move;
     }
