@@ -88,8 +88,7 @@ app.UseAuthorization();
 
 app.UseCors("AllowOrigin");
 
-app.MapControllers();
-
 app.MapHub<SignalrHub>("/websocket");
+app.MapControllers();
 
 app.Run();
