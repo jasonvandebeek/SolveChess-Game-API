@@ -3,7 +3,7 @@
 namespace SolveChess.Logic.Exceptions;
 
 [Serializable]
-public class PromotionException : Exception
+public class PromotionException : SolveChessBaseException
 {
     public PromotionException()
     {

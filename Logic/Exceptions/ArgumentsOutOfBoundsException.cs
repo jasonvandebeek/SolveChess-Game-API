@@ -3,7 +3,7 @@
 namespace SolveChess.Logic.Exceptions;
 
 [Serializable]
-public class ArgumentsOutOfBoundsException : Exception
+public class ArgumentsOutOfBoundsException : SolveChessBaseException
 {
     public ArgumentsOutOfBoundsException()
     {

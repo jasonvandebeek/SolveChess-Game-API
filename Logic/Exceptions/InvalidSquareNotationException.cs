@@ -2,7 +2,7 @@
 
 namespace SolveChess.Logic.Exceptions;
 [Serializable]
-public class InvalidSquareNotationException : Exception
+public class InvalidSquareNotationException : SolveChessBaseException
 {
     public InvalidSquareNotationException()
     {

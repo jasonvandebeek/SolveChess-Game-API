@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SolveChess.API.Exceptions;
+using SolveChess.API.Middleware;
 using SolveChess.API.Service;
 using SolveChess.API.Websocket;
 using SolveChess.DAL;
@@ -88,6 +89,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseExceptionHandlingMiddleware();
 
 app.UseCors("AllowOrigin");
 

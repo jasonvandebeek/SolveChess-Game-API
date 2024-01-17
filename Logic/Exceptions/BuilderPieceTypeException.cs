@@ -3,7 +3,7 @@
 namespace SolveChess.Logic.Exceptions;
 
 [Serializable]
-public class BuilderPieceTypeException : Exception
+public class BuilderPieceTypeException : SolveChessBaseException
 {
     public BuilderPieceTypeException()
     {

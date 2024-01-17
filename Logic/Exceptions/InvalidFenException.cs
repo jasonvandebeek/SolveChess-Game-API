@@ -3,7 +3,7 @@
 namespace SolveChess.Logic.Exceptions;
 
 [Serializable]
-public class InvalidFenException : Exception
+public class InvalidFenException : SolveChessBaseException
 {
     public InvalidFenException()
     {
