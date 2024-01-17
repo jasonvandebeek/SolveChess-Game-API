@@ -5,7 +5,6 @@ using SolveChess.Logic.Chess.Attributes;
 using SolveChess.Logic.Chess.Interfaces;
 using SolveChess.Logic.Chess.Utilities;
 using SolveChess.Logic.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SolveChess.API.Service;
 
