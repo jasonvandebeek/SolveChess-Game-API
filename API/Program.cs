@@ -33,12 +33,11 @@ builder.Services.AddScoped<IClientCommunicationService, WebsocketClientCommunica
 
 builder.Services.AddScoped<IChessService, ChessService>();
 
-
-string origins = Environment.GetEnvironmentVariable("SolveChess_CorsUrls") ?? throw new MissingEnvVariableException("No cors urls found in .env variables!");
-string[] originArray = origins.Split(';');
-
 builder.Services.AddCors(options =>
 {
+    string origins = Environment.GetEnvironmentVariable("SolveChess_CorsUrls") ?? throw new MissingEnvVariableException("No cors urls found in .env variables!");
+    string[] originArray = origins.Split(';');
+
     options.AddPolicy("AllowOrigin", builder => builder.WithOrigins(originArray)
         .AllowAnyHeader()
         .AllowAnyMethod()
